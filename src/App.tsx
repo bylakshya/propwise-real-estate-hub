@@ -156,14 +156,15 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <RoleCheck>
-                    {({ user }) => {
+                    {(() => {
+                      const { user } = useAuth();
                       if (user?.role === 'broker') {
                         return <Navigate to="/broker" replace />;
                       } else if (user?.role === 'builder') {
                         return <Navigate to="/builder" replace />;
                       }
                       return <Navigate to="/role-selection" replace />;
-                    }}
+                    })()}
                   </RoleCheck>
                 </ProtectedRoute>
               } 

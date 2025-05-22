@@ -17,6 +17,8 @@ import PropertyManager from "./pages/broker/PropertyManager";
 // Builder Pages
 import BuilderDashboard from "./pages/builder/BuilderDashboard";
 import ProjectManager from "./pages/builder/ProjectManager";
+import ProjectDetail from "./pages/builder/ProjectDetail";
+import CustomerManager from "./pages/builder/CustomerManager";
 
 // 404 Page
 import NotFound from "./pages/NotFound";
@@ -153,6 +155,32 @@ const AppRoutes = () => {
             <RoleCheck>
               <BuilderRoute>
                 <ProjectManager />
+              </BuilderRoute>
+            </RoleCheck>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/builder/projects/:projectId" 
+        element={
+          <ProtectedRoute>
+            <RoleCheck>
+              <BuilderRoute>
+                <ProjectDetail />
+              </BuilderRoute>
+            </RoleCheck>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/builder/customers" 
+        element={
+          <ProtectedRoute>
+            <RoleCheck>
+              <BuilderRoute>
+                <CustomerManager />
               </BuilderRoute>
             </RoleCheck>
           </ProtectedRoute>

@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,9 +8,11 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { mockProjects } from '@/data/mockData';
 import { Project } from '@/types';
+import { PlusCircle, Edit, Share, ArrowRight } from 'lucide-react';
 
 const ProjectManager: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
   
   // Filter projects
   const filteredProjects = mockProjects.filter(project => {
@@ -30,10 +33,7 @@ const ProjectManager: React.FC = () => {
           </div>
           
           <Button className="md:self-start">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
+            <PlusCircle className="h-5 w-5 mr-2" />
             Create New Project
           </Button>
         </div>
@@ -64,7 +64,11 @@ const ProjectManager: React.FC = () => {
           
           <TabsContent value="all" className="space-y-6">
             {filteredProjects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
+              <ProjectCard 
+                key={project.id} 
+                project={project} 
+                onViewDetails={() => navigate(`/builder/projects/${project.id}`)} 
+              />
             ))}
             
             {filteredProjects.length === 0 && (
@@ -103,9 +107,10 @@ const ProjectManager: React.FC = () => {
 
 interface ProjectCardProps {
   project: Project;
+  onViewDetails: () => void;
 }
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
+const ProjectCard: React.FC<ProjectCardProps> = ({ project, onViewDetails }) => {
   const totalPlots = project.plots.length;
   const soldPlots = project.plots.filter(p => p.status === 'Sold').length;
   const reservedPlots = project.plots.filter(p => p.status === 'Reserved').length;
@@ -117,7 +122,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   const availablePercentage = Math.round((availablePlots / totalPlots) * 100);
   
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer" onClick={onViewDetails}>
       <div className="flex flex-col md:flex-row">
         <div className="md:w-1/3 h-60 md:h-auto">
           <img 
@@ -196,24 +201,20 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
           
           <div className="border-t border-gray-100 pt-4 flex justify-between items-center">
             <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 20h9"></path>
-                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                </svg>
+              <Button variant="outline" size="sm" onClick={(e) => e.stopPropagation()}>
+                <Edit className="h-4 w-4 mr-1" />
                 Edit
               </Button>
-              <Button variant="outline" size="sm">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                  <polyline points="10 17 15 12 10 7"></polyline>
-                  <line x1="15" y1="12" x2="3" y2="12"></line>
-                </svg>
+              <Button variant="outline" size="sm" onClick={(e) => e.stopPropagation()}>
+                <Share className="h-4 w-4 mr-1" />
                 Share
               </Button>
             </div>
             
-            <Button>View Details</Button>
+            <Button>
+              View Details
+              <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
           </div>
         </CardContent>
       </div>

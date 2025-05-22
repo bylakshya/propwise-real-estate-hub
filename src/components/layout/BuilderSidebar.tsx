@@ -161,12 +161,15 @@ const BuilderSidebar: React.FC = () => {
               <Link
                 to={item.path}
                 className={cn(
-                  "nav-link",
-                  location.pathname === item.path && "active"
+                  "flex items-center px-3 py-2 text-sm rounded-md text-gray-700 hover:bg-gray-100 transition-colors",
+                  location.pathname === item.path || 
+                  (item.path !== '/builder' && location.pathname.startsWith(item.path)) 
+                    ? "bg-gray-100 text-gray-900 font-medium" 
+                    : ""
                 )}
               >
                 {item.icon}
-                <span>{item.name}</span>
+                <span className="ml-3">{item.name}</span>
               </Link>
             </li>
           ))}

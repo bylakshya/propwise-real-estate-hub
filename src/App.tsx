@@ -75,105 +75,116 @@ const BuilderRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+// Component for handling redirection based on role
+const HomeRedirect = () => {
+  const { user } = useAuth();
+  
+  if (user?.role === 'broker') {
+    return <Navigate to="/broker" replace />;
+  } else if (user?.role === 'builder') {
+    return <Navigate to="/builder" replace />;
+  }
+  
+  return <Navigate to="/role-selection" replace />;
+};
+
+const AppRoutes = () => {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Public routes */}
+        <Route path="/auth" element={<AuthPage />} />
+        
+        {/* Protected routes */}
+        <Route 
+          path="/role-selection" 
+          element={
+            <ProtectedRoute>
+              <RoleSelectionPage />
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Broker routes */}
+        <Route 
+          path="/broker" 
+          element={
+            <ProtectedRoute>
+              <RoleCheck>
+                <BrokerRoute>
+                  <BrokerDashboard />
+                </BrokerRoute>
+              </RoleCheck>
+            </ProtectedRoute>
+          } 
+        />
+        
+        <Route 
+          path="/broker/properties" 
+          element={
+            <ProtectedRoute>
+              <RoleCheck>
+                <BrokerRoute>
+                  <PropertyManager />
+                </BrokerRoute>
+              </RoleCheck>
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Builder routes */}
+        <Route 
+          path="/builder" 
+          element={
+            <ProtectedRoute>
+              <RoleCheck>
+                <BuilderRoute>
+                  <BuilderDashboard />
+                </BuilderRoute>
+              </RoleCheck>
+            </ProtectedRoute>
+          } 
+        />
+        
+        <Route 
+          path="/builder/projects" 
+          element={
+            <ProtectedRoute>
+              <RoleCheck>
+                <BuilderRoute>
+                  <ProjectManager />
+                </BuilderRoute>
+              </RoleCheck>
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Redirect from home to proper route */}
+        <Route 
+          path="/" 
+          element={
+            <ProtectedRoute>
+              <RoleCheck>
+                <HomeRedirect />
+              </RoleCheck>
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* 404 route */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/auth" element={<AuthPage />} />
-            
-            {/* Protected routes */}
-            <Route 
-              path="/role-selection" 
-              element={
-                <ProtectedRoute>
-                  <RoleSelectionPage />
-                </ProtectedRoute>
-              } 
-            />
-            
-            {/* Broker routes */}
-            <Route 
-              path="/broker" 
-              element={
-                <ProtectedRoute>
-                  <RoleCheck>
-                    <BrokerRoute>
-                      <BrokerDashboard />
-                    </BrokerRoute>
-                  </RoleCheck>
-                </ProtectedRoute>
-              } 
-            />
-            
-            <Route 
-              path="/broker/properties" 
-              element={
-                <ProtectedRoute>
-                  <RoleCheck>
-                    <BrokerRoute>
-                      <PropertyManager />
-                    </BrokerRoute>
-                  </RoleCheck>
-                </ProtectedRoute>
-              } 
-            />
-            
-            {/* Builder routes */}
-            <Route 
-              path="/builder" 
-              element={
-                <ProtectedRoute>
-                  <RoleCheck>
-                    <BuilderRoute>
-                      <BuilderDashboard />
-                    </BuilderRoute>
-                  </RoleCheck>
-                </ProtectedRoute>
-              } 
-            />
-            
-            <Route 
-              path="/builder/projects" 
-              element={
-                <ProtectedRoute>
-                  <RoleCheck>
-                    <BuilderRoute>
-                      <ProjectManager />
-                    </BuilderRoute>
-                  </RoleCheck>
-                </ProtectedRoute>
-              } 
-            />
-            
-            {/* Redirect from home to proper route */}
-            <Route 
-              path="/" 
-              element={
-                <ProtectedRoute>
-                  <RoleCheck>
-                    {(() => {
-                      const { user } = useAuth();
-                      if (user?.role === 'broker') {
-                        return <Navigate to="/broker" replace />;
-                      } else if (user?.role === 'builder') {
-                        return <Navigate to="/builder" replace />;
-                      }
-                      return <Navigate to="/role-selection" replace />;
-                    })()}
-                  </RoleCheck>
-                </ProtectedRoute>
-              } 
-            />
-            
-            {/* 404 route */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <AppRoutes />
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>

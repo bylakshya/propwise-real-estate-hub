@@ -88,105 +88,106 @@ const HomeRedirect = () => {
   return <Navigate to="/role-selection" replace />;
 };
 
+// Main routes component with AuthProvider context
 const AppRoutes = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Public routes */}
-        <Route path="/auth" element={<AuthPage />} />
-        
-        {/* Protected routes */}
-        <Route 
-          path="/role-selection" 
-          element={
-            <ProtectedRoute>
-              <RoleSelectionPage />
-            </ProtectedRoute>
-          } 
-        />
-        
-        {/* Broker routes */}
-        <Route 
-          path="/broker" 
-          element={
-            <ProtectedRoute>
-              <RoleCheck>
-                <BrokerRoute>
-                  <BrokerDashboard />
-                </BrokerRoute>
-              </RoleCheck>
-            </ProtectedRoute>
-          } 
-        />
-        
-        <Route 
-          path="/broker/properties" 
-          element={
-            <ProtectedRoute>
-              <RoleCheck>
-                <BrokerRoute>
-                  <PropertyManager />
-                </BrokerRoute>
-              </RoleCheck>
-            </ProtectedRoute>
-          } 
-        />
-        
-        {/* Builder routes */}
-        <Route 
-          path="/builder" 
-          element={
-            <ProtectedRoute>
-              <RoleCheck>
-                <BuilderRoute>
-                  <BuilderDashboard />
-                </BuilderRoute>
-              </RoleCheck>
-            </ProtectedRoute>
-          } 
-        />
-        
-        <Route 
-          path="/builder/projects" 
-          element={
-            <ProtectedRoute>
-              <RoleCheck>
-                <BuilderRoute>
-                  <ProjectManager />
-                </BuilderRoute>
-              </RoleCheck>
-            </ProtectedRoute>
-          } 
-        />
-        
-        {/* Redirect from home to proper route */}
-        <Route 
-          path="/" 
-          element={
-            <ProtectedRoute>
-              <RoleCheck>
-                <HomeRedirect />
-              </RoleCheck>
-            </ProtectedRoute>
-          } 
-        />
-        
-        {/* 404 route */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      {/* Public routes */}
+      <Route path="/auth" element={<AuthPage />} />
+      
+      {/* Protected routes */}
+      <Route 
+        path="/role-selection" 
+        element={
+          <ProtectedRoute>
+            <RoleSelectionPage />
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* Broker routes */}
+      <Route 
+        path="/broker" 
+        element={
+          <ProtectedRoute>
+            <RoleCheck>
+              <BrokerRoute>
+                <BrokerDashboard />
+              </BrokerRoute>
+            </RoleCheck>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/broker/properties" 
+        element={
+          <ProtectedRoute>
+            <RoleCheck>
+              <BrokerRoute>
+                <PropertyManager />
+              </BrokerRoute>
+            </RoleCheck>
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* Builder routes */}
+      <Route 
+        path="/builder" 
+        element={
+          <ProtectedRoute>
+            <RoleCheck>
+              <BuilderRoute>
+                <BuilderDashboard />
+              </BuilderRoute>
+            </RoleCheck>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/builder/projects" 
+        element={
+          <ProtectedRoute>
+            <RoleCheck>
+              <BuilderRoute>
+                <ProjectManager />
+              </BuilderRoute>
+            </RoleCheck>
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* Redirect from home to proper route */}
+      <Route 
+        path="/" 
+        element={
+          <ProtectedRoute>
+            <RoleCheck>
+              <HomeRedirect />
+            </RoleCheck>
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* 404 route */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 };
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <AppRoutes />
-      </TooltipProvider>
-    </AuthProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <AppRoutes />
+        </TooltipProvider>
+      </AuthProvider>
+    </BrowserRouter>
   </QueryClientProvider>
 );
 

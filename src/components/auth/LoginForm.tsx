@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface LoginFormProps {
   onToggleForm: () => void;
@@ -15,8 +16,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggleForm }) => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +30,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggleForm }) => {
         title: 'Login successful',
         description: 'Welcome back to RealEstate Pro!',
       });
+      
+      // Navigate based on user role
+      if (user?.role) {
+        navigate(user.role === 'broker' ? '/broker' : '/builder');
+      } else {
+        navigate('/role-selection');
+      }
     } catch (error) {
       toast({
         title: 'Login failed',

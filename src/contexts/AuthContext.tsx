@@ -56,7 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<void> => {
     setIsLoading(true);
     try {
       // Simulate API call delay
@@ -70,7 +70,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { password, ...userWithoutPassword } = foundUser;
         setUser(userWithoutPassword);
         localStorage.setItem('realEstateUser', JSON.stringify(userWithoutPassword));
-        return userWithoutPassword; // Return the user object for immediate use
       } else {
         throw new Error('Invalid email or password');
       }
@@ -79,7 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signup = async (name: string, email: string, password: string) => {
+  const signup = async (name: string, email: string, password: string): Promise<void> => {
     setIsLoading(true);
     try {
       // Simulate API call delay

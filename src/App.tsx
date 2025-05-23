@@ -20,6 +20,11 @@ import ProjectManager from "./pages/builder/ProjectManager";
 import ProjectDetail from "./pages/builder/ProjectDetail";
 import CustomerManager from "./pages/builder/CustomerManager";
 import Calculator from "./pages/builder/Calculator";
+import Financials from "./pages/builder/Financials";
+import CalendarPage from "./pages/builder/CalendarPage";
+import CollectionTracker from "./pages/builder/CollectionTracker";
+import StatsAnalysis from "./pages/builder/StatsAnalysis";
+import DealHistory from "./pages/builder/DealHistory";
 
 // 404 Page
 import NotFound from "./pages/NotFound";
@@ -195,6 +200,71 @@ const AppRoutes = () => {
             <RoleCheck>
               <BuilderRoute>
                 <Calculator />
+              </BuilderRoute>
+            </RoleCheck>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/builder/financials" 
+        element={
+          <ProtectedRoute>
+            <RoleCheck>
+              <BuilderRoute>
+                <Financials />
+              </BuilderRoute>
+            </RoleCheck>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/builder/calendar" 
+        element={
+          <ProtectedRoute>
+            <RoleCheck>
+              <BuilderRoute>
+                <CalendarPage />
+              </BuilderRoute>
+            </RoleCheck>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/builder/collections" 
+        element={
+          <ProtectedRoute>
+            <RoleCheck>
+              <BuilderRoute>
+                <CollectionTracker />
+              </BuilderRoute>
+            </RoleCheck>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/builder/stats" 
+        element={
+          <ProtectedRoute>
+            <RoleCheck>
+              <BuilderRoute>
+                <StatsAnalysis />
+              </BuilderRoute>
+            </RoleCheck>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/builder/deals" 
+        element={
+          <ProtectedRoute>
+            <RoleCheck>
+              <BuilderRoute>
+                <DealHistory />
               </BuilderRoute>
             </RoleCheck>
           </ProtectedRoute>

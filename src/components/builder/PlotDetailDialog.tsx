@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { format } from 'date-fns';
 import { Plot } from '@/types';
-import { Phone, Tag, Garden, Image } from 'lucide-react';
+import { Phone, Tag, Flower2, Image } from 'lucide-react';
 
 interface PlotDetailDialogProps {
   plot: Plot | null;
@@ -93,7 +93,7 @@ const PlotDetailDialog: React.FC<PlotDetailDialogProps> = ({ plot, isOpen, onClo
                 )}
                 {plot.hasGarden && (
                   <Badge variant="outline">
-                    <Garden className="h-3.5 w-3.5 mr-1" />
+                    <Flower2 className="h-3.5 w-3.5 mr-1" />
                     Garden
                   </Badge>
                 )}

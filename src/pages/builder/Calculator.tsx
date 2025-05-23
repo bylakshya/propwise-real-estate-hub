@@ -9,11 +9,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Calculator as CalcIcon, IndianRupee, Percent, Building, BarChart3, FileText } from 'lucide-react';
 
 const Calculator: React.FC = () => {
+  // Loan EMI Calculator state and logic
   const [loanEmi, setLoanEmi] = useState<number | null>(null);
   const [plotReturns, setPlotReturns] = useState<{ monthly: number; yearly: number; total: number } | null>(null);
+  const [stampDuty, setStampDuty] = useState<{ amount: number; percentage: number } | null>(null);
+  const [brokerage, setBrokerage] = useState<{ amount: number; percentage: number } | null>(null);
   
   const loanForm = useForm({
     defaultValues: {
@@ -28,6 +31,21 @@ const Calculator: React.FC = () => {
       initialInvestment: 2000000,
       annualAppreciation: 15,
       holdingPeriod: 5,
+    },
+  });
+
+  const stampDutyForm = useForm({
+    defaultValues: {
+      propertyValue: 5000000,
+      state: 'maharashtra',
+      propertyType: 'residential',
+    },
+  });
+
+  const brokerageForm = useForm({
+    defaultValues: {
+      dealValue: 5000000,
+      brokerageRate: 1,
     },
   });
 
@@ -58,25 +76,77 @@ const Calculator: React.FC = () => {
     });
   };
 
+  const calculateStampDuty = (values: { propertyValue: number; state: string; propertyType: string }) => {
+    // Different stamp duty rates by state and property type
+    const stampDutyRates: Record<string, Record<string, number>> = {
+      'maharashtra': { 'residential': 5, 'commercial': 6, 'land': 4 },
+      'karnataka': { 'residential': 5.6, 'commercial': 6, 'land': 5 },
+      'delhi': { 'residential': 4, 'commercial': 6, 'land': 4 },
+      'tamilnadu': { 'residential': 7, 'commercial': 8, 'land': 7 },
+      'telangana': { 'residential': 6, 'commercial': 6, 'land': 5.5 },
+    };
+    
+    const rate = stampDutyRates[values.state]?.[values.propertyType] || 5;
+    const dutyAmount = (values.propertyValue * rate) / 100;
+    
+    setStampDuty({ 
+      amount: dutyAmount,
+      percentage: rate
+    });
+  };
+
+  const calculateBrokerage = (values: { dealValue: number; brokerageRate: number }) => {
+    const amount = (values.dealValue * values.brokerageRate) / 100;
+    
+    setBrokerage({
+      amount: amount,
+      percentage: values.brokerageRate
+    });
+  };
+
+  // Format currency
+  const formatCurrency = (amount: number) => {
+    return `₹${Math.round(amount).toLocaleString()}`;
+  };
+
+  const calculateButtonClasses = "w-full bg-primary hover:bg-primary/90 text-white";
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Real Estate Calculator</h1>
-          <p className="text-gray-500 mt-1">Calculate loan EMIs, expected returns, and more</p>
+          <p className="text-gray-500 mt-1">Calculate loan EMIs, expected returns, stamp duty, and brokerage</p>
         </div>
         
-        <Tabs defaultValue="loan">
-          <TabsList className="w-full max-w-md">
-            <TabsTrigger value="loan" className="flex-1">Loan EMI Calculator</TabsTrigger>
-            <TabsTrigger value="plot" className="flex-1">Plot Investment Returns</TabsTrigger>
+        <Tabs defaultValue="loan" className="bg-white rounded-lg shadow-sm border p-1">
+          <TabsList className="w-full grid grid-cols-2 md:grid-cols-4">
+            <TabsTrigger value="loan" className="flex items-center gap-2">
+              <IndianRupee className="h-4 w-4" />
+              <span>Loan EMI</span>
+            </TabsTrigger>
+            <TabsTrigger value="plot" className="flex items-center gap-2">
+              <Building className="h-4 w-4" />
+              <span>Plot Returns</span>
+            </TabsTrigger>
+            <TabsTrigger value="stampduty" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              <span>Stamp Duty</span>
+            </TabsTrigger>
+            <TabsTrigger value="brokerage" className="flex items-center gap-2">
+              <Percent className="h-4 w-4" />
+              <span>Brokerage</span>
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="loan" className="mt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
+              <Card className="border shadow-md">
                 <CardHeader>
-                  <CardTitle>Home Loan EMI Calculator</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <CalcIcon className="h-5 w-5 text-primary" />
+                    <span>Home Loan EMI Calculator</span>
+                  </CardTitle>
                   <CardDescription>Calculate your monthly EMI payment for home loans</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -88,6 +158,7 @@ const Calculator: React.FC = () => {
                         type="number"
                         step="100000"
                         {...loanForm.register('loanAmount', { valueAsNumber: true })}
+                        className="border-gray-300"
                       />
                     </div>
                     
@@ -98,6 +169,7 @@ const Calculator: React.FC = () => {
                         type="number"
                         step="0.1"
                         {...loanForm.register('interestRate', { valueAsNumber: true })}
+                        className="border-gray-300"
                       />
                     </div>
                     
@@ -107,10 +179,11 @@ const Calculator: React.FC = () => {
                         id="tenure"
                         type="number"
                         {...loanForm.register('tenure', { valueAsNumber: true })}
+                        className="border-gray-300"
                       />
                     </div>
                     
-                    <Button type="submit" className="w-full">
+                    <Button type="submit" className={calculateButtonClasses}>
                       Calculate EMI
                       <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>
@@ -118,7 +191,7 @@ const Calculator: React.FC = () => {
                 </CardContent>
               </Card>
               
-              <Card>
+              <Card className="border shadow-md">
                 <CardHeader>
                   <CardTitle>EMI Results</CardTitle>
                   <CardDescription>Your calculated monthly EMI payment</CardDescription>
@@ -128,27 +201,28 @@ const Calculator: React.FC = () => {
                     <div className="space-y-6">
                       <div className="bg-gray-50 p-6 rounded-lg text-center">
                         <p className="text-sm text-gray-500 mb-1">Monthly EMI</p>
-                        <h2 className="text-3xl font-bold">₹{Math.round(loanEmi).toLocaleString()}</h2>
+                        <h2 className="text-3xl font-bold text-primary">{formatCurrency(loanEmi)}</h2>
                       </div>
                       
                       <div className="grid grid-cols-2 gap-4">
                         <div className="bg-gray-50 p-4 rounded-lg">
                           <p className="text-sm text-gray-500 mb-1">Total Interest Payable</p>
                           <p className="text-lg font-semibold">
-                            ₹{Math.round(loanEmi * loanForm.getValues('tenure') * 12 - loanForm.getValues('loanAmount')).toLocaleString()}
+                            {formatCurrency(loanEmi * loanForm.getValues('tenure') * 12 - loanForm.getValues('loanAmount'))}
                           </p>
                         </div>
                         
                         <div className="bg-gray-50 p-4 rounded-lg">
                           <p className="text-sm text-gray-500 mb-1">Total Payment</p>
                           <p className="text-lg font-semibold">
-                            ₹{Math.round(loanEmi * loanForm.getValues('tenure') * 12).toLocaleString()}
+                            {formatCurrency(loanEmi * loanForm.getValues('tenure') * 12)}
                           </p>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-center h-64 text-gray-500">
+                    <div className="flex flex-col items-center justify-center h-64 text-gray-500 bg-gray-50 rounded-lg">
+                      <CalcIcon className="h-12 w-12 mb-4 text-gray-400" />
                       <p>Enter loan details and calculate to see results</p>
                     </div>
                   )}
@@ -159,9 +233,12 @@ const Calculator: React.FC = () => {
           
           <TabsContent value="plot" className="mt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
+              <Card className="border shadow-md">
                 <CardHeader>
-                  <CardTitle>Plot Investment Calculator</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <Building className="h-5 w-5 text-primary" />
+                    <span>Plot Investment Calculator</span>
+                  </CardTitle>
                   <CardDescription>Calculate potential returns on plot investments</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -173,6 +250,7 @@ const Calculator: React.FC = () => {
                         type="number"
                         step="100000"
                         {...plotForm.register('initialInvestment', { valueAsNumber: true })}
+                        className="border-gray-300"
                       />
                     </div>
                     
@@ -183,6 +261,7 @@ const Calculator: React.FC = () => {
                         type="number"
                         step="0.5"
                         {...plotForm.register('annualAppreciation', { valueAsNumber: true })}
+                        className="border-gray-300"
                       />
                     </div>
                     
@@ -192,10 +271,11 @@ const Calculator: React.FC = () => {
                         id="holdingPeriod"
                         type="number"
                         {...plotForm.register('holdingPeriod', { valueAsNumber: true })}
+                        className="border-gray-300"
                       />
                     </div>
                     
-                    <Button type="submit" className="w-full">
+                    <Button type="submit" className={calculateButtonClasses}>
                       Calculate Returns
                       <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>
@@ -203,7 +283,7 @@ const Calculator: React.FC = () => {
                 </CardContent>
               </Card>
               
-              <Card>
+              <Card className="border shadow-md">
                 <CardHeader>
                   <CardTitle>Investment Results</CardTitle>
                   <CardDescription>Projected returns on your plot investment</CardDescription>
@@ -213,9 +293,9 @@ const Calculator: React.FC = () => {
                     <div className="space-y-6">
                       <div className="bg-gray-50 p-6 rounded-lg text-center">
                         <p className="text-sm text-gray-500 mb-1">Total Returns After {plotForm.getValues('holdingPeriod')} Years</p>
-                        <h2 className="text-3xl font-bold">₹{Math.round(plotReturns.total).toLocaleString()}</h2>
+                        <h2 className="text-3xl font-bold text-primary">{formatCurrency(plotReturns.total)}</h2>
                         <p className="text-sm text-gray-500 mt-1">
-                          Future Value: ₹{Math.round(plotForm.getValues('initialInvestment') + plotReturns.total).toLocaleString()}
+                          Future Value: {formatCurrency(plotForm.getValues('initialInvestment') + plotReturns.total)}
                         </p>
                       </div>
                       
@@ -223,21 +303,207 @@ const Calculator: React.FC = () => {
                         <div className="bg-gray-50 p-4 rounded-lg">
                           <p className="text-sm text-gray-500 mb-1">Yearly Return</p>
                           <p className="text-lg font-semibold">
-                            ₹{Math.round(plotReturns.yearly).toLocaleString()}
+                            {formatCurrency(plotReturns.yearly)}
                           </p>
                         </div>
                         
                         <div className="bg-gray-50 p-4 rounded-lg">
                           <p className="text-sm text-gray-500 mb-1">Monthly Return</p>
                           <p className="text-lg font-semibold">
-                            ₹{Math.round(plotReturns.monthly).toLocaleString()}
+                            {formatCurrency(plotReturns.monthly)}
                           </p>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-center h-64 text-gray-500">
+                    <div className="flex flex-col items-center justify-center h-64 text-gray-500 bg-gray-50 rounded-lg">
+                      <Building className="h-12 w-12 mb-4 text-gray-400" />
                       <p>Enter investment details to see projected returns</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="stampduty" className="mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="border shadow-md">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-primary" />
+                    <span>Stamp Duty Calculator</span>
+                  </CardTitle>
+                  <CardDescription>Calculate stamp duty charges for property registration</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={stampDutyForm.handleSubmit(calculateStampDuty)} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="propertyValue">Property Value (₹)</Label>
+                      <Input
+                        id="propertyValue"
+                        type="number"
+                        step="100000"
+                        {...stampDutyForm.register('propertyValue', { valueAsNumber: true })}
+                        className="border-gray-300"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="state">State</Label>
+                      <Select 
+                        onValueChange={(value) => stampDutyForm.setValue('state', value)} 
+                        defaultValue={stampDutyForm.getValues('state')}
+                      >
+                        <SelectTrigger className="border-gray-300">
+                          <SelectValue placeholder="Select state" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="maharashtra">Maharashtra</SelectItem>
+                          <SelectItem value="karnataka">Karnataka</SelectItem>
+                          <SelectItem value="delhi">Delhi</SelectItem>
+                          <SelectItem value="tamilnadu">Tamil Nadu</SelectItem>
+                          <SelectItem value="telangana">Telangana</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="propertyType">Property Type</Label>
+                      <Select 
+                        onValueChange={(value) => stampDutyForm.setValue('propertyType', value)} 
+                        defaultValue={stampDutyForm.getValues('propertyType')}
+                      >
+                        <SelectTrigger className="border-gray-300">
+                          <SelectValue placeholder="Select property type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="residential">Residential</SelectItem>
+                          <SelectItem value="commercial">Commercial</SelectItem>
+                          <SelectItem value="land">Land/Plot</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <Button type="submit" className={calculateButtonClasses}>
+                      Calculate Stamp Duty
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+              
+              <Card className="border shadow-md">
+                <CardHeader>
+                  <CardTitle>Stamp Duty Results</CardTitle>
+                  <CardDescription>Calculated stamp duty for property registration</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {stampDuty ? (
+                    <div className="space-y-6">
+                      <div className="bg-gray-50 p-6 rounded-lg text-center">
+                        <p className="text-sm text-gray-500 mb-1">Total Stamp Duty</p>
+                        <h2 className="text-3xl font-bold text-primary">{formatCurrency(stampDuty.amount)}</h2>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Rate: {stampDuty.percentage}% of property value
+                        </p>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                          <p className="text-sm text-gray-500 mb-1">Additional Information</p>
+                          <ul className="text-sm space-y-1">
+                            <li>• Registration charges may apply separately</li>
+                            <li>• Women buyers may get concessions in some states</li>
+                            <li>• Rates may vary based on property location within the state</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-64 text-gray-500 bg-gray-50 rounded-lg">
+                      <FileText className="h-12 w-12 mb-4 text-gray-400" />
+                      <p>Enter property details to calculate stamp duty</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="brokerage" className="mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="border shadow-md">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Percent className="h-5 w-5 text-primary" />
+                    <span>Brokerage Calculator</span>
+                  </CardTitle>
+                  <CardDescription>Calculate brokerage fees for property deals</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={brokerageForm.handleSubmit(calculateBrokerage)} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="dealValue">Property Deal Value (₹)</Label>
+                      <Input
+                        id="dealValue"
+                        type="number"
+                        step="100000"
+                        {...brokerageForm.register('dealValue', { valueAsNumber: true })}
+                        className="border-gray-300"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="brokerageRate">Brokerage Rate (%)</Label>
+                      <Input
+                        id="brokerageRate"
+                        type="number"
+                        step="0.1"
+                        {...brokerageForm.register('brokerageRate', { valueAsNumber: true })}
+                        className="border-gray-300"
+                      />
+                    </div>
+                    
+                    <Button type="submit" className={calculateButtonClasses}>
+                      Calculate Brokerage
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+              
+              <Card className="border shadow-md">
+                <CardHeader>
+                  <CardTitle>Brokerage Results</CardTitle>
+                  <CardDescription>Calculated brokerage amount</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {brokerage ? (
+                    <div className="space-y-6">
+                      <div className="bg-gray-50 p-6 rounded-lg text-center">
+                        <p className="text-sm text-gray-500 mb-1">Total Brokerage</p>
+                        <h2 className="text-3xl font-bold text-primary">{formatCurrency(brokerage.amount)}</h2>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Rate: {brokerage.percentage}% of deal value
+                        </p>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                          <p className="text-sm text-gray-500 mb-1">Common Brokerage Rates</p>
+                          <ul className="text-sm space-y-1">
+                            <li>• Residential: 1-2% of property value</li>
+                            <li>• Commercial: 2-3% of property value</li>
+                            <li>• Rental: Usually 1 month's rent</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-64 text-gray-500 bg-gray-50 rounded-lg">
+                      <Percent className="h-12 w-12 mb-4 text-gray-400" />
+                      <p>Enter deal value to calculate brokerage amount</p>
                     </div>
                   )}
                 </CardContent>

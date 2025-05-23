@@ -25,6 +25,7 @@ import CalendarPage from "./pages/builder/CalendarPage";
 import CollectionTracker from "./pages/builder/CollectionTracker";
 import StatsAnalysis from "./pages/builder/StatsAnalysis";
 import DealHistory from "./pages/builder/DealHistory";
+import ReportsLegalDocs from "./pages/builder/ReportsLegalDocs";
 
 // 404 Page
 import NotFound from "./pages/NotFound";
@@ -265,6 +266,19 @@ const AppRoutes = () => {
             <RoleCheck>
               <BuilderRoute>
                 <DealHistory />
+              </BuilderRoute>
+            </RoleCheck>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/builder/reports" 
+        element={
+          <ProtectedRoute>
+            <RoleCheck>
+              <BuilderRoute>
+                <ReportsLegalDocs />
               </BuilderRoute>
             </RoleCheck>
           </ProtectedRoute>

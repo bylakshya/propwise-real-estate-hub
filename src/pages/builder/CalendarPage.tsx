@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,8 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { CalendarPlus, Search } from 'lucide-react';
 
-// Mock events data
-const mockEvents = [
+// Mock events data with correct type values
+const mockEvents: Event[] = [
   {
     id: 1,
     title: 'Client Meeting',
@@ -77,7 +76,7 @@ const CalendarPage: React.FC = () => {
   // Function to add new event
   const handleAddEvent = () => {
     if (newEvent.title && newEvent.date) {
-      const event = {
+      const event: Event = {
         id: events.length + 1,
         title: newEvent.title,
         description: newEvent.description || '',
@@ -291,7 +290,7 @@ const CalendarPage: React.FC = () => {
             <div className="grid w-full gap-2">
               <Label htmlFor="event-type">Event Type</Label>
               <Select 
-                value={newEvent.type} 
+                value={newEvent.type as string} 
                 onValueChange={(value) => setNewEvent({...newEvent, type: value as Event['type']})}
               >
                 <SelectTrigger id="event-type">

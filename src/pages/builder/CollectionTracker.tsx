@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,6 +24,25 @@ interface Payment {
   reminderSent: boolean;
 }
 
+// Extended payment interface for MockData
+interface PaymentHistory {
+  date: string;
+  amount: number;
+  mode: "Cash" | "Bank Transfer" | "UPI" | "Check";
+}
+
+interface PendingPayment {
+  amount: number;
+  dueDate: string;
+}
+
+// Extended payment type to match actual mockData structure
+interface PaymentData {
+  type: "Installment" | "Lumpsum";
+  history: PaymentHistory[];
+  pending?: PendingPayment[];
+}
+
 // Generate mock collection data
 const generateCollectionData = () => {
   const payments: Payment[] = [];
@@ -48,8 +66,9 @@ const generateCollectionData = () => {
         });
       }
       
-      if (plot.payment && plot.payment.completed && plot.payment.completed.length > 0) {
-        plot.payment.completed.forEach(payment => {
+      // Using payment.history instead of payment.completed
+      if (plot.payment && plot.payment.history && plot.payment.history.length > 0) {
+        plot.payment.history.forEach(payment => {
           payments.push({
             id: `payment-${id++}`,
             plotId: plot.id,
@@ -57,10 +76,10 @@ const generateCollectionData = () => {
             projectName: project.name,
             customerName: plot.buyer ? plot.buyer.name : 'N/A',
             amount: payment.amount,
-            dueDate: payment.dueDate,
+            dueDate: payment.date,
             status: 'Paid',
-            paymentMethod: payment.method,
-            paymentDate: payment.paidDate,
+            paymentMethod: payment.mode,
+            paymentDate: payment.date,
             reminderSent: true,
           });
         });

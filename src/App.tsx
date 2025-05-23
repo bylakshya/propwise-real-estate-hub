@@ -19,6 +19,7 @@ import BuilderDashboard from "./pages/builder/BuilderDashboard";
 import ProjectManager from "./pages/builder/ProjectManager";
 import ProjectDetail from "./pages/builder/ProjectDetail";
 import CustomerManager from "./pages/builder/CustomerManager";
+import Calculator from "./pages/builder/Calculator";
 
 // 404 Page
 import NotFound from "./pages/NotFound";
@@ -181,6 +182,19 @@ const AppRoutes = () => {
             <RoleCheck>
               <BuilderRoute>
                 <CustomerManager />
+              </BuilderRoute>
+            </RoleCheck>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/builder/calculator" 
+        element={
+          <ProtectedRoute>
+            <RoleCheck>
+              <BuilderRoute>
+                <Calculator />
               </BuilderRoute>
             </RoleCheck>
           </ProtectedRoute>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -10,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { mockProjects } from '@/data/mockData';
 import { Project, Plot } from '@/types';
 import { ArrowLeft, Download, Filter, Grid3X3, Users } from 'lucide-react';
+import PlotDetailDialog from '@/components/builder/PlotDetailDialog';
 
 const ProjectDetail: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -17,6 +17,8 @@ const ProjectDetail: React.FC = () => {
   const [project, setProject] = useState<Project | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [selectedPlot, setSelectedPlot] = useState<Plot | null>(null);
+  const [isPlotDialogOpen, setIsPlotDialogOpen] = useState(false);
   
   useEffect(() => {
     // Find project from mock data
@@ -27,6 +29,12 @@ const ProjectDetail: React.FC = () => {
       }
     }
   }, [projectId]);
+  
+  const handlePlotClick = (plot: Plot) => {
+    setSelectedPlot(plot);
+    setIsPlotDialogOpen(true);
+    console.log('Plot details:', plot);
+  };
   
   if (!project) {
     return (
@@ -178,10 +186,7 @@ const ProjectDetail: React.FC = () => {
                               ${plot.status === 'Sold' ? 'bg-green-50 border-green-200' : 
                                 plot.status === 'Reserved' ? 'bg-amber-50 border-amber-200' : 
                                 'bg-blue-50 border-blue-200'}`}
-                            onClick={() => {
-                              // Show plot details (could open a dialog)
-                              console.log('Plot details:', plot);
-                            }}
+                            onClick={() => handlePlotClick(plot)}
                           >
                             <div className="text-center">
                               <p className="font-bold text-lg">#{plot.plotNumber}</p>
@@ -215,7 +220,11 @@ const ProjectDetail: React.FC = () => {
                   </TableHeader>
                   <TableBody>
                     {filteredPlots.map((plot) => (
-                      <TableRow key={plot.id}>
+                      <TableRow 
+                        key={plot.id} 
+                        className="cursor-pointer hover:bg-gray-50" 
+                        onClick={() => handlePlotClick(plot)}
+                      >
                         <TableCell className="font-medium">{plot.plotNumber}</TableCell>
                         <TableCell>{plot.size} {plot.sizeUnit}</TableCell>
                         <TableCell>
@@ -250,6 +259,13 @@ const ProjectDetail: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+      
+      {/* Plot Detail Dialog */}
+      <PlotDetailDialog 
+        plot={selectedPlot}
+        isOpen={isPlotDialogOpen}
+        onClose={() => setIsPlotDialogOpen(false)}
+      />
     </DashboardLayout>
   );
 };

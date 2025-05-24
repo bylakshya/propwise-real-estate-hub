@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -13,7 +12,7 @@ import {
   BarChart3, 
   FileText, 
   UserCog,
-  Whatsapp,
+  MessageCircle,
   FileSymlink,
 } from 'lucide-react';
 
@@ -64,7 +63,7 @@ const BuilderSidebar: React.FC = () => {
     {
       name: 'Collection Tracker',
       path: '/builder/collections',
-      icon: <Whatsapp className="h-5 w-5" />,
+      icon: <MessageCircle className="h-5 w-5" />,
     },
     {
       name: 'Stats & Analysis',

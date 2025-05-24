@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -6,11 +5,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { mockProjects } from '@/data/mockData';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Download, Filter, Mail, Search, Bell, Phone, Whatsapp, Clock, Calendar as CalendarIcon, User, IndianRupee } from 'lucide-react';
-import { toast } from "@/components/ui/use-toast";
+import { Calendar, Download, Filter, Mail, Search, Bell, Phone, MessageCircle, Clock, Calendar as CalendarIcon, User, IndianRupee } from 'lucide-react';
+import { toast } from "@/hooks/use-toast";
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
@@ -321,7 +321,7 @@ const CollectionTracker: React.FC = () => {
               className="flex gap-2 items-center"
               onClick={() => setIsWhatsappDialogOpen(true)}
             >
-              <Whatsapp className="h-4 w-4" />
+              <MessageCircle className="h-4 w-4" />
               WhatsApp Setup
             </Button>
           </div>
@@ -512,7 +512,7 @@ const CollectionTracker: React.FC = () => {
                                     className={payment.whatsappEnabled ? "bg-green-600 text-white hover:bg-green-700" : ""}
                                     onClick={() => handleSendWhatsapp(payment)}
                                   >
-                                    <Whatsapp className="h-4 w-4" />
+                                    <MessageCircle className="h-4 w-4" />
                                   </Button>
                                 </>
                               ) : (
@@ -617,7 +617,7 @@ const CollectionTracker: React.FC = () => {
                                   className={payment.whatsappEnabled ? "bg-green-600 hover:bg-green-700" : ""}
                                   onClick={() => handleSendWhatsapp(payment)}
                                 >
-                                  <Whatsapp className="h-3.5 w-3.5 mr-1" />
+                                  <MessageCircle className="h-3.5 w-3.5 mr-1" />
                                   Send Reminder
                                 </Button>
                               </div>
@@ -693,7 +693,7 @@ const CollectionTracker: React.FC = () => {
               >
                 {isSending ? "Sending..." : (
                   <>
-                    <Whatsapp className="h-4 w-4 mr-2" />
+                    <MessageCircle className="h-4 w-4 mr-2" />
                     Send via WhatsApp
                   </>
                 )}

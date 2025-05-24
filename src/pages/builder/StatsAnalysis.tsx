@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -6,10 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { mockProjects } from '@/data/mockData';
-import { BarChart, BarStack, Bar } from '@/components/ui/chart';
-import { AreaChart, Area } from '@/components/ui/chart';
-import { PieChart, Pie, Cell } from '@/components/ui/chart';
-import { ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { Download, ChartBar, CalendarClock, TrendingUp, Filter, ChartPie } from 'lucide-react';
 
 const StatsAnalysis: React.FC = () => {

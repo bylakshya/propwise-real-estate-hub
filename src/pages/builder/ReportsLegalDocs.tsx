@@ -210,7 +210,7 @@ const ReportsLegalDocs: React.FC = () => {
                 />
               </div>
               
-              <Select value={categoryFilter || ''} onValueChange={(value) => setCategoryFilter(value || null)}>
+              <Select value={categoryFilter || 'all'} onValueChange={(value) => setCategoryFilter(value === 'all' ? null : value)}>
                 <SelectTrigger>
                   <div className="flex items-center">
                     <Filter className="h-4 w-4 mr-2 text-gray-500" />
@@ -218,14 +218,14 @@ const ReportsLegalDocs: React.FC = () => {
                   </div>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Categories</SelectItem>
+                  <SelectItem value="all">All Categories</SelectItem>
                   <SelectItem value="legal">Legal Documents</SelectItem>
                   <SelectItem value="financial">Financial Documents</SelectItem>
                   <SelectItem value="project">Project Documents</SelectItem>
                 </SelectContent>
               </Select>
               
-              <Select value={statusFilter || ''} onValueChange={(value) => setStatusFilter(value || null)}>
+              <Select value={statusFilter || 'all'} onValueChange={(value) => setStatusFilter(value === 'all' ? null : value)}>
                 <SelectTrigger>
                   <div className="flex items-center">
                     <Clock className="h-4 w-4 mr-2 text-gray-500" />
@@ -233,7 +233,7 @@ const ReportsLegalDocs: React.FC = () => {
                   </div>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Status</SelectItem>
+                  <SelectItem value="all">All Status</SelectItem>
                   <SelectItem value="active">Active</SelectItem>
                   <SelectItem value="expired">Expired</SelectItem>
                   <SelectItem value="pending">Pending</SelectItem>

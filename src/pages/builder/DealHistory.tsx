@@ -256,7 +256,7 @@ const DealHistory: React.FC = () => {
                 />
               </div>
               
-              <Select value={statusFilter || ''} onValueChange={(value) => setStatusFilter(value || null)}>
+              <Select value={statusFilter || 'all'} onValueChange={(value) => setStatusFilter(value === 'all' ? null : value)}>
                 <SelectTrigger className="border-gray-300">
                   <div className="flex items-center gap-2">
                     <Filter className="h-4 w-4 text-gray-500" />
@@ -264,14 +264,14 @@ const DealHistory: React.FC = () => {
                   </div>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Statuses</SelectItem>
+                  <SelectItem value="all">All Statuses</SelectItem>
                   <SelectItem value="Completed">Completed</SelectItem>
                   <SelectItem value="Pending">Pending</SelectItem>
                   <SelectItem value="Cancelled">Cancelled</SelectItem>
                 </SelectContent>
               </Select>
               
-              <Select value={projectFilter || ''} onValueChange={(value) => setProjectFilter(value || null)}>
+              <Select value={projectFilter || 'all'} onValueChange={(value) => setProjectFilter(value === 'all' ? null : value)}>
                 <SelectTrigger className="border-gray-300">
                   <div className="flex items-center gap-2">
                     <Building className="h-4 w-4 text-gray-500" />
@@ -279,7 +279,7 @@ const DealHistory: React.FC = () => {
                   </div>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Projects</SelectItem>
+                  <SelectItem value="all">All Projects</SelectItem>
                   {uniqueProjects.map(project => (
                     <SelectItem key={project} value={project}>{project}</SelectItem>
                   ))}

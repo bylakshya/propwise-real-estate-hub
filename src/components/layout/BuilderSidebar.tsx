@@ -25,57 +25,57 @@ const BuilderSidebar: React.FC = () => {
     {
       name: 'Dashboard',
       path: '/builder',
-      icon: <LayoutDashboard className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />,
+      icon: LayoutDashboard,
     },
     {
       name: 'Manage Projects',
       path: '/builder/projects',
-      icon: <Package className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />,
+      icon: Package,
     },
     {
       name: 'Customer Manager',
       path: '/builder/customers',
-      icon: <Users className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />,
+      icon: Users,
     },
     {
       name: 'Financials',
       path: '/builder/financials',
-      icon: <DollarSign className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />,
+      icon: DollarSign,
     },
     {
       name: 'Calendar',
       path: '/builder/calendar',
-      icon: <Calendar className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />,
+      icon: Calendar,
     },
     {
       name: 'Deals History',
       path: '/builder/deals',
-      icon: <FileSymlink className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />,
+      icon: FileSymlink,
     },
     {
       name: 'Reports & Legal Docs',
       path: '/builder/reports',
-      icon: <FileText className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />,
+      icon: FileText,
     },
     {
       name: 'Calculator',
       path: '/builder/calculator',
-      icon: <CalcIcon className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />,
+      icon: CalcIcon,
     },
     {
       name: 'Collection Tracker',
       path: '/builder/collections',
-      icon: <MessageCircle className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />,
+      icon: MessageCircle,
     },
     {
       name: 'Stats & Analysis',
       path: '/builder/stats',
-      icon: <BarChart3 className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />,
+      icon: BarChart3,
     },
     {
       name: 'Admin',
       path: '/builder/admin',
-      icon: <UserCog className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />,
+      icon: UserCog,
     },
   ];
 
@@ -92,26 +92,27 @@ const BuilderSidebar: React.FC = () => {
       
       <nav className="flex-1 overflow-y-auto py-6">
         <ul className="space-y-2 px-4 stagger-animation">
-          {menuItems.map((item, index) => (
-            <li key={item.path} style={{animationDelay: `${index * 0.1}s`}}>
-              <Link
-                to={item.path}
-                className={cn(
-                  "nav-link group",
-                  location.pathname === item.path || 
-                  (item.path !== '/builder' && location.pathname.startsWith(item.path)) 
-                    ? "active" 
-                    : ""
-                )}
-              >
-                <div className="transition-colors duration-300">
-                  {item.icon}
-                </div>
-                <span className="font-medium">{item.name}</span>
-                <ChevronRight className="ml-auto h-4 w-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-x-1" />
-              </Link>
-            </li>
-          ))}
+          {menuItems.map((item, index) => {
+            const IconComponent = item.icon;
+            const isActive = location.pathname === item.path || 
+              (item.path !== '/builder' && location.pathname.startsWith(item.path));
+            
+            return (
+              <li key={item.path} style={{animationDelay: `${index * 0.1}s`}}>
+                <Link
+                  to={item.path}
+                  className={cn(
+                    "nav-link",
+                    isActive ? "active" : ""
+                  )}
+                >
+                  <IconComponent className="nav-icon h-5 w-5" />
+                  <span className="nav-text">{item.name}</span>
+                  <ChevronRight className="nav-chevron" />
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </nav>
       

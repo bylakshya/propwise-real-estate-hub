@@ -13,7 +13,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const { user } = useAuth();
   
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900">
       <StatusBar />
       
       <div className="flex flex-1 overflow-hidden">
@@ -21,7 +21,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           {user?.role === 'broker' ? <BrokerSidebar /> : <BuilderSidebar />}
         </div>
         
-        <main className="flex-1 overflow-y-auto bg-gradient-to-br from-gray-50/50 to-blue-50/30 p-6 animate-fade-in">
+        <main className="flex-1 overflow-y-auto bg-gradient-to-br from-gray-50/50 to-blue-50/30 dark:from-gray-900/50 dark:to-blue-900/30 p-6 animate-fade-in">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>

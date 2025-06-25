@@ -26,6 +26,11 @@ import CollectionTracker from "./pages/builder/CollectionTracker";
 import StatsAnalysis from "./pages/builder/StatsAnalysis";
 import DealHistory from "./pages/builder/DealHistory";
 import ReportsLegalDocs from "./pages/builder/ReportsLegalDocs";
+import MarketingHub from "./pages/builder/MarketingHub";
+import ConstructionMaterials from "./pages/builder/ConstructionMaterials";
+import MaterialSuppliers from "./pages/builder/MaterialSuppliers";
+import InventoryManagement from "./pages/builder/InventoryManagement";
+import AIFeatures from "./pages/builder/AIFeatures";
 
 // 404 Page
 import NotFound from "./pages/NotFound";
@@ -188,6 +193,71 @@ const AppRoutes = () => {
             <RoleCheck>
               <BuilderRoute>
                 <CustomerManager />
+              </BuilderRoute>
+            </RoleCheck>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/builder/marketing" 
+        element={
+          <ProtectedRoute>
+            <RoleCheck>
+              <BuilderRoute>
+                <MarketingHub />
+              </BuilderRoute>
+            </RoleCheck>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/builder/materials" 
+        element={
+          <ProtectedRoute>
+            <RoleCheck>
+              <BuilderRoute>
+                <ConstructionMaterials />
+              </BuilderRoute>
+            </RoleCheck>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/builder/materials/suppliers" 
+        element={
+          <ProtectedRoute>
+            <RoleCheck>
+              <BuilderRoute>
+                <MaterialSuppliers />
+              </BuilderRoute>
+            </RoleCheck>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/builder/materials/inventory" 
+        element={
+          <ProtectedRoute>
+            <RoleCheck>
+              <BuilderRoute>
+                <InventoryManagement />
+              </BuilderRoute>
+            </RoleCheck>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/builder/ai-features" 
+        element={
+          <ProtectedRoute>
+            <RoleCheck>
+              <BuilderRoute>
+                <AIFeatures />
               </BuilderRoute>
             </RoleCheck>
           </ProtectedRoute>

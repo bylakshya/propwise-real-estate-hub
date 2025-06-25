@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -14,7 +13,8 @@ import {
   ChevronRight,
   Megaphone,
   Mail,
-  Target
+  Target,
+  Brain
 } from 'lucide-react';
 
 const BrokerSidebar: React.FC = () => {
@@ -50,6 +50,11 @@ const BrokerSidebar: React.FC = () => {
       name: 'Lead Generation',
       path: '/broker/marketing/leads',
       icon: Target,
+    },
+    {
+      name: 'AI Features',
+      path: '/broker/ai-features',
+      icon: Brain,
     },
     {
       name: 'Brokerage Analysis',

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -21,7 +20,8 @@ import {
   Target,
   Hammer,
   Truck,
-  Package2
+  Package2,
+  Brain
 } from 'lucide-react';
 
 const BuilderSidebar: React.FC = () => {
@@ -72,6 +72,11 @@ const BuilderSidebar: React.FC = () => {
       name: 'Inventory Management',
       path: '/builder/materials/inventory',
       icon: Package2,
+    },
+    {
+      name: 'AI Features',
+      path: '/builder/ai-features',
+      icon: Brain,
     },
     {
       name: 'Financials',

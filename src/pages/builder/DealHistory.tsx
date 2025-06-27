@@ -323,7 +323,8 @@ const DealHistory: React.FC = () => {
                 {t('propertyTransactions')}
               </CardTitle>
               <CardDescription>
-                {t('showingTransactions', { count: filteredDeals.length })}
+                {/* Fixed the error here by removing the second parameter */}
+                {`${t('showingTransactions').replace('{count}', filteredDeals.length.toString())}`}
                 {statusFilter && ` with status: ${statusFilter}`}
                 {projectFilter && ` in project: ${projectFilter}`}
               </CardDescription>

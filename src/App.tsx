@@ -1,422 +1,120 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { DarkModeProvider } from "@/contexts/DarkModeContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
-
-// Auth Pages
+import Index from "./pages/Index";
 import AuthPage from "./pages/AuthPage";
 import RoleSelectionPage from "./pages/RoleSelectionPage";
-
-// Broker Pages
-import BrokerDashboard from "./pages/broker/BrokerDashboard";
-import PropertyManager from "./pages/broker/PropertyManager";
+import NotFound from "./pages/NotFound";
 
 // Builder Pages
 import BuilderDashboard from "./pages/builder/BuilderDashboard";
 import ProjectManager from "./pages/builder/ProjectManager";
 import ProjectDetail from "./pages/builder/ProjectDetail";
 import CustomerManager from "./pages/builder/CustomerManager";
-import Calculator from "./pages/builder/Calculator";
-import Financials from "./pages/builder/Financials";
 import CalendarPage from "./pages/builder/CalendarPage";
-import CollectionTracker from "./pages/builder/CollectionTracker";
-import StatsAnalysis from "./pages/builder/StatsAnalysis";
+import Financials from "./pages/builder/Financials";
 import DealHistory from "./pages/builder/DealHistory";
+import CollectionTracker from "./pages/builder/CollectionTracker";
 import ReportsLegalDocs from "./pages/builder/ReportsLegalDocs";
-import MarketingHub from "./pages/builder/MarketingHub";
+import StatsAnalysis from "./pages/builder/StatsAnalysis";
+import AIFeatures from "./pages/builder/AIFeatures";
+import Calculator from "./pages/builder/Calculator";
 import ConstructionMaterials from "./pages/builder/ConstructionMaterials";
 import MaterialSuppliers from "./pages/builder/MaterialSuppliers";
 import InventoryManagement from "./pages/builder/InventoryManagement";
-import AIFeatures from "./pages/builder/AIFeatures";
+import MarketingHub from "./pages/builder/MarketingHub";
 import EmailCampaigns from "./pages/builder/EmailCampaigns";
 import LeadGeneration from "./pages/builder/LeadGeneration";
+import SubscriptionPage from "./pages/builder/SubscriptionPage";
+import WhatsAppSetup from "./pages/builder/WhatsAppSetup";
 
-// 404 Page
-import NotFound from "./pages/NotFound";
+// Broker Pages
+import BrokerDashboard from "./pages/broker/BrokerDashboard";
+import PropertyManager from "./pages/broker/PropertyManager";
 
 const queryClient = new QueryClient();
 
-// Protected Route component
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, isLoading } = useAuth();
-  
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-  
-  if (!isAuthenticated) {
-    return <Navigate to="/auth" replace />;
-  }
-  
-  return <>{children}</>;
-};
-
-// Role Selection Check
-const RoleCheck = ({ children }: { children: React.ReactNode }) => {
-  const { user, isAuthenticated } = useAuth();
-  
-  if (isAuthenticated && !user?.role) {
-    return <Navigate to="/role-selection" replace />;
-  }
-  
-  return <>{children}</>;
-};
-
-// Broker Route
-const BrokerRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user } = useAuth();
-  
-  if (user?.role !== 'broker') {
-    return <Navigate to="/builder" replace />;
-  }
-  
-  return <>{children}</>;
-};
-
-// Builder Route
-const BuilderRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user } = useAuth();
-  
-  if (user?.role !== 'builder') {
-    return <Navigate to="/broker" replace />;
-  }
-  
-  return <>{children}</>;
-};
-
-// Component for handling redirection based on role
-const HomeRedirect = () => {
-  const { user } = useAuth();
-  
-  if (user?.role === 'broker') {
-    return <Navigate to="/broker" replace />;
-  } else if (user?.role === 'builder') {
-    return <Navigate to="/builder" replace />;
-  }
-  
-  return <Navigate to="/role-selection" replace />;
-};
-
-// Main routes component with AuthProvider context
-const AppRoutes = () => {
-  return (
-    <Routes>
-      {/* Public routes */}
-      <Route path="/auth" element={<AuthPage />} />
-      
-      {/* Protected routes */}
-      <Route 
-        path="/role-selection" 
-        element={
-          <ProtectedRoute>
-            <RoleSelectionPage />
-          </ProtectedRoute>
-        } 
-      />
-      
-      {/* Broker routes */}
-      <Route 
-        path="/broker" 
-        element={
-          <ProtectedRoute>
-            <RoleCheck>
-              <BrokerRoute>
-                <BrokerDashboard />
-              </BrokerRoute>
-            </RoleCheck>
-          </ProtectedRoute>
-        } 
-      />
-      
-      <Route 
-        path="/broker/properties" 
-        element={
-          <ProtectedRoute>
-            <RoleCheck>
-              <BrokerRoute>
-                <PropertyManager />
-              </BrokerRoute>
-            </RoleCheck>
-          </ProtectedRoute>
-        } 
-      />
-      
-      {/* Builder routes */}
-      <Route 
-        path="/builder" 
-        element={
-          <ProtectedRoute>
-            <RoleCheck>
-              <BuilderRoute>
-                <BuilderDashboard />
-              </BuilderRoute>
-            </RoleCheck>
-          </ProtectedRoute>
-        } 
-      />
-      
-      <Route 
-        path="/builder/projects" 
-        element={
-          <ProtectedRoute>
-            <RoleCheck>
-              <BuilderRoute>
-                <ProjectManager />
-              </BuilderRoute>
-            </RoleCheck>
-          </ProtectedRoute>
-        } 
-      />
-      
-      <Route 
-        path="/builder/projects/:projectId" 
-        element={
-          <ProtectedRoute>
-            <RoleCheck>
-              <BuilderRoute>
-                <ProjectDetail />
-              </BuilderRoute>
-            </RoleCheck>
-          </ProtectedRoute>
-        } 
-      />
-      
-      <Route 
-        path="/builder/customers" 
-        element={
-          <ProtectedRoute>
-            <RoleCheck>
-              <BuilderRoute>
-                <CustomerManager />
-              </BuilderRoute>
-            </RoleCheck>
-          </ProtectedRoute>
-        } 
-      />
-
-      <Route 
-        path="/builder/marketing" 
-        element={
-          <ProtectedRoute>
-            <RoleCheck>
-              <BuilderRoute>
-                <MarketingHub />
-              </BuilderRoute>
-            </RoleCheck>
-          </ProtectedRoute>
-        } 
-      />
-
-      <Route 
-        path="/builder/marketing/email" 
-        element={
-          <ProtectedRoute>
-            <RoleCheck>
-              <BuilderRoute>
-                <EmailCampaigns />
-              </BuilderRoute>
-            </RoleCheck>
-          </ProtectedRoute>
-        } 
-      />
-
-      <Route 
-        path="/builder/marketing/leads" 
-        element={
-          <ProtectedRoute>
-            <RoleCheck>
-              <BuilderRoute>
-                <LeadGeneration />
-              </BuilderRoute>
-            </RoleCheck>
-          </ProtectedRoute>
-        } 
-      />
-
-      <Route 
-        path="/builder/materials" 
-        element={
-          <ProtectedRoute>
-            <RoleCheck>
-              <BuilderRoute>
-                <ConstructionMaterials />
-              </BuilderRoute>
-            </RoleCheck>
-          </ProtectedRoute>
-        } 
-      />
-
-      <Route 
-        path="/builder/materials/suppliers" 
-        element={
-          <ProtectedRoute>
-            <RoleCheck>
-              <BuilderRoute>
-                <MaterialSuppliers />
-              </BuilderRoute>
-            </RoleCheck>
-          </ProtectedRoute>
-        } 
-      />
-
-      <Route 
-        path="/builder/materials/inventory" 
-        element={
-          <ProtectedRoute>
-            <RoleCheck>
-              <BuilderRoute>
-                <InventoryManagement />
-              </BuilderRoute>
-            </RoleCheck>
-          </ProtectedRoute>
-        } 
-      />
-
-      <Route 
-        path="/builder/ai-features" 
-        element={
-          <ProtectedRoute>
-            <RoleCheck>
-              <BuilderRoute>
-                <AIFeatures />
-              </BuilderRoute>
-            </RoleCheck>
-          </ProtectedRoute>
-        } 
-      />
-
-      <Route 
-        path="/builder/calculator" 
-        element={
-          <ProtectedRoute>
-            <RoleCheck>
-              <BuilderRoute>
-                <Calculator />
-              </BuilderRoute>
-            </RoleCheck>
-          </ProtectedRoute>
-        } 
-      />
-      
-      <Route 
-        path="/builder/financials" 
-        element={
-          <ProtectedRoute>
-            <RoleCheck>
-              <BuilderRoute>
-                <Financials />
-              </BuilderRoute>
-            </RoleCheck>
-          </ProtectedRoute>
-        } 
-      />
-      
-      <Route 
-        path="/builder/calendar" 
-        element={
-          <ProtectedRoute>
-            <RoleCheck>
-              <BuilderRoute>
-                <CalendarPage />
-              </BuilderRoute>
-            </RoleCheck>
-          </ProtectedRoute>
-        } 
-      />
-      
-      <Route 
-        path="/builder/collections" 
-        element={
-          <ProtectedRoute>
-            <RoleCheck>
-              <BuilderRoute>
-                <CollectionTracker />
-              </BuilderRoute>
-            </RoleCheck>
-          </ProtectedRoute>
-        } 
-      />
-      
-      <Route 
-        path="/builder/stats" 
-        element={
-          <ProtectedRoute>
-            <RoleCheck>
-              <BuilderRoute>
-                <StatsAnalysis />
-              </BuilderRoute>
-            </RoleCheck>
-          </ProtectedRoute>
-        } 
-      />
-      
-      <Route 
-        path="/builder/deals" 
-        element={
-          <ProtectedRoute>
-            <RoleCheck>
-              <BuilderRoute>
-                <DealHistory />
-              </BuilderRoute>
-            </RoleCheck>
-          </ProtectedRoute>
-        } 
-      />
-      
-      <Route 
-        path="/builder/reports" 
-        element={
-          <ProtectedRoute>
-            <RoleCheck>
-              <BuilderRoute>
-                <ReportsLegalDocs />
-              </BuilderRoute>
-            </RoleCheck>
-          </ProtectedRoute>
-        } 
-      />
-      
-      {/* Redirect from home to proper route */}
-      <Route 
-        path="/" 
-        element={
-          <ProtectedRoute>
-            <RoleCheck>
-              <HomeRedirect />
-            </RoleCheck>
-          </ProtectedRoute>
-        } 
-      />
-      
-      {/* 404 route */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  );
-};
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
+    <LanguageProvider>
       <DarkModeProvider>
-        <LanguageProvider>
-          <AuthProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <AppRoutes />
-            </TooltipProvider>
-          </AuthProvider>
-        </LanguageProvider>
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                {/* Common Routes */}
+                <Route path="/" element={<Index />} />
+                <Route path="/auth" element={<AuthPage />} />
+                <Route path="/role-selection" element={<RoleSelectionPage />} />
+                
+                {/* Builder Routes */}
+                <Route path="/builder" element={<BuilderDashboard />} />
+                <Route path="/builder/projects" element={<ProjectManager />} />
+                <Route path="/builder/projects/:id" element={<ProjectDetail />} />
+                <Route path="/builder/customers" element={<CustomerManager />} />
+                <Route path="/builder/calendar" element={<CalendarPage />} />
+                <Route path="/builder/financials" element={<Financials />} />
+                <Route path="/builder/deals" element={<DealHistory />} />
+                <Route path="/builder/collections" element={<CollectionTracker />} />
+                <Route path="/builder/reports" element={<ReportsLegalDocs />} />
+                <Route path="/builder/stats" element={<StatsAnalysis />} />
+                <Route path="/builder/ai-features" element={<AIFeatures />} />
+                <Route path="/builder/calculator" element={<Calculator />} />
+                <Route path="/builder/materials" element={<ConstructionMaterials />} />
+                <Route path="/builder/materials/suppliers" element={<MaterialSuppliers />} />
+                <Route path="/builder/materials/inventory" element={<InventoryManagement />} />
+                <Route path="/builder/marketing" element={<MarketingHub />} />
+                <Route path="/builder/marketing/email" element={<EmailCampaigns />} />
+                <Route path="/builder/marketing/leads" element={<LeadGeneration />} />
+                <Route path="/builder/subscription" element={<SubscriptionPage />} />
+                <Route path="/builder/whatsapp-setup" element={<WhatsAppSetup />} />
+                
+                {/* Placeholder routes for new sidebar items */}
+                <Route path="/builder/crm" element={<div className="p-8"><h1 className="text-2xl font-bold">CRM Integration - Coming Soon</h1></div>} />
+                <Route path="/builder/social" element={<div className="p-8"><h1 className="text-2xl font-bold">Social Media Management - Coming Soon</h1></div>} />
+                <Route path="/builder/quality" element={<div className="p-8"><h1 className="text-2xl font-bold">Quality Control - Coming Soon</h1></div>} />
+                <Route path="/builder/work-orders" element={<div className="p-8"><h1 className="text-2xl font-bold">Work Orders - Coming Soon</h1></div>} />
+                <Route path="/builder/tax" element={<div className="p-8"><h1 className="text-2xl font-bold">Tax Management - Coming Soon</h1></div>} />
+                <Route path="/builder/loans" element={<div className="p-8"><h1 className="text-2xl font-bold">Loan Tracking - Coming Soon</h1></div>} />
+                <Route path="/builder/predictions" element={<div className="p-8"><h1 className="text-2xl font-bold">Predictive Analytics - Coming Soon</h1></div>} />
+                <Route path="/builder/market-intel" element={<div className="p-8"><h1 className="text-2xl font-bold">Market Intelligence - Coming Soon</h1></div>} />
+                <Route path="/builder/documents" element={<div className="p-8"><h1 className="text-2xl font-bold">Document Generator - Coming Soon</h1></div>} />
+                <Route path="/builder/legal" element={<div className="p-8"><h1 className="text-2xl font-bold">Legal Compliance - Coming Soon</h1></div>} />
+                <Route path="/builder/workflows" element={<div className="p-8"><h1 className="text-2xl font-bold">Workflow Automation - Coming Soon</h1></div>} />
+                <Route path="/builder/notifications" element={<div className="p-8"><h1 className="text-2xl font-bold">Notifications Center - Coming Soon</h1></div>} />
+                <Route path="/builder/admin" element={<div className="p-8"><h1 className="text-2xl font-bold">Admin Panel - Coming Soon</h1></div>} />
+                <Route path="/builder/help" element={<div className="p-8"><h1 className="text-2xl font-bold">Help Center - Coming Soon</h1></div>} />
+                
+                {/* Broker Routes */}
+                <Route path="/broker" element={<BrokerDashboard />} />
+                <Route path="/broker/properties" element={<PropertyManager />} />
+                <Route path="/broker/customers" element={<CustomerManager />} />
+                <Route path="/broker/marketing" element={<MarketingHub />} />
+                <Route path="/broker/marketing/email" element={<EmailCampaigns />} />
+                <Route path="/broker/marketing/leads" element={<LeadGeneration />} />
+                <Route path="/broker/ai-features" element={<AIFeatures />} />
+                <Route path="/broker/brokerage" element={<div className="p-8"><h1 className="text-2xl font-bold">Brokerage Analysis - Coming Soon</h1></div>} />
+                <Route path="/broker/calendar" element={<CalendarPage />} />
+                <Route path="/broker/deals" element={<DealHistory />} />
+                <Route path="/broker/reports" element={<ReportsLegalDocs />} />
+                <Route path="/broker/calculator" element={<Calculator />} />
+                
+                {/* 404 Route */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </AuthProvider>
       </DarkModeProvider>
-    </BrowserRouter>
+    </LanguageProvider>
   </QueryClientProvider>
 );
 

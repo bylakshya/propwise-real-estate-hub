@@ -3,6 +3,7 @@ import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDarkMode } from '@/contexts/DarkModeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useNavigate } from 'react-router-dom';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,7 @@ const StatusBar: React.FC = () => {
   const { isDark, toggleDarkMode } = useDarkMode();
   const { language, setLanguage } = useLanguage();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const texts = {
     en: {
@@ -58,12 +60,11 @@ const StatusBar: React.FC = () => {
   };
 
   const handleWhatsAppSetup = () => {
-    toast({
-      title: currentTexts.whatsappSetup,
-      description: language === 'en' 
-        ? 'WhatsApp integration setup initiated!' 
-        : 'व्हाट्सऐप एकीकरण सेटअप शुरू किया गया!',
-    });
+    navigate('/builder/whatsapp-setup');
+  };
+
+  const handleSubscription = () => {
+    navigate('/builder/subscription');
   };
 
   return (
@@ -87,7 +88,7 @@ const StatusBar: React.FC = () => {
         </Button>
         
         {/* Subscription Button */}
-        <Button variant="outline" size="sm" className="hidden sm:flex">
+        <Button variant="outline" size="sm" className="hidden sm:flex" onClick={handleSubscription}>
           {currentTexts.subscription}
         </Button>
         

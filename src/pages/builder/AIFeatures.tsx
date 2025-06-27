@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,7 +9,7 @@ import {
   Brain, 
   MessageSquare, 
   BarChart3, 
-  PredictiveText,
+  Type,
   Lightbulb,
   Zap,
   TrendingUp,

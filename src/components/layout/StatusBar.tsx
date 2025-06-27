@@ -1,7 +1,8 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDarkMode } from '@/contexts/DarkModeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -11,8 +12,8 @@ import { useToast } from '@/hooks/use-toast';
 const StatusBar: React.FC = () => {
   const { user, logout } = useAuth();
   const { isDark, toggleDarkMode } = useDarkMode();
+  const { language, setLanguage } = useLanguage();
   const { toast } = useToast();
-  const [language, setLanguage] = useState<'en' | 'hi'>('en');
 
   const texts = {
     en: {

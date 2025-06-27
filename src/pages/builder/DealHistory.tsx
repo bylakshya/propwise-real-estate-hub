@@ -1,6 +1,6 @@
-
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
@@ -89,12 +89,20 @@ const generateDealData = () => {
 
 const deals = generateDealData();
 
-// Format currency
+// Format currency with proper responsive handling
 const formatCurrency = (amount: number) => {
+  if (amount >= 10000000) { // 1 crore
+    return `₹${(amount / 10000000).toFixed(1)}Cr`;
+  } else if (amount >= 100000) { // 1 lakh
+    return `₹${(amount / 100000).toFixed(1)}L`;
+  } else if (amount >= 1000) { // 1 thousand
+    return `₹${(amount / 1000).toFixed(0)}K`;
+  }
   return `₹${amount.toLocaleString()}`;
 };
 
 const DealHistory: React.FC = () => {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [projectFilter, setProjectFilter] = useState<string | null>(null);
@@ -163,38 +171,38 @@ const DealHistory: React.FC = () => {
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="font-bold text-3xl mb-2">Deal History</h1>
-            <p className="text-gray-500">Track and manage your property transactions</p>
+            <h1 className="font-bold text-3xl mb-2">{t('dealHistory')}</h1>
+            <p className="text-gray-500">{t('trackManageTransactions')}</p>
           </div>
           
           <div className="flex gap-2">
             <Button variant="outline" className="flex items-center gap-2 border-gray-300 shadow-sm">
               <Download className="h-4 w-4" />
-              Export Report
+              {t('exportReport')}
             </Button>
             <Button className="flex items-center gap-2 shadow-sm">
               <FileText className="h-4 w-4" />
-              Generate Statement
+              {t('generateStatement')}
             </Button>
           </div>
         </div>
         
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Summary Cards - Fixed responsive layout */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           {/* Commission Summary */}
           <Card className="border shadow-md bg-gradient-to-br from-green-50 to-green-100">
-            <CardContent className="p-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between">
-                <div className="flex items-center">
-                  <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center text-green-600 shadow-sm">
-                    <IndianRupee className="h-6 w-6" />
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center min-w-0 flex-1">
+                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-green-100 flex items-center justify-center text-green-600 shadow-sm flex-shrink-0">
+                    <IndianRupee className="h-5 w-5 md:h-6 md:w-6" />
                   </div>
-                  <div className="ml-4">
-                    <h3 className="text-lg font-medium">Total Commission</h3>
-                    <p className="text-sm text-gray-500">From completed deals</p>
+                  <div className="ml-3 md:ml-4 min-w-0 flex-1">
+                    <h3 className="text-sm md:text-lg font-medium truncate">{t('totalCommission')}</h3>
+                    <p className="text-xs md:text-sm text-gray-500 truncate">{t('fromCompletedDeals')}</p>
                   </div>
                 </div>
-                <div className="mt-4 md:mt-0 text-2xl font-bold text-green-600">
+                <div className="text-lg md:text-2xl font-bold text-green-600 ml-2 flex-shrink-0">
                   {formatCurrency(totalCommission)}
                 </div>
               </div>
@@ -203,18 +211,18 @@ const DealHistory: React.FC = () => {
           
           {/* Total Sales Value */}
           <Card className="border shadow-md bg-gradient-to-br from-blue-50 to-blue-100">
-            <CardContent className="p-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between">
-                <div className="flex items-center">
-                  <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shadow-sm">
-                    <Building className="h-6 w-6" />
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center min-w-0 flex-1">
+                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shadow-sm flex-shrink-0">
+                    <Building className="h-5 w-5 md:h-6 md:w-6" />
                   </div>
-                  <div className="ml-4">
-                    <h3 className="text-lg font-medium">Total Sales Value</h3>
-                    <p className="text-sm text-gray-500">From completed deals</p>
+                  <div className="ml-3 md:ml-4 min-w-0 flex-1">
+                    <h3 className="text-sm md:text-lg font-medium truncate">{t('totalSalesValue')}</h3>
+                    <p className="text-xs md:text-sm text-gray-500 truncate">{t('fromCompletedDeals')}</p>
                   </div>
                 </div>
-                <div className="mt-4 md:mt-0 text-2xl font-bold text-blue-600">
+                <div className="text-lg md:text-2xl font-bold text-blue-600 ml-2 flex-shrink-0">
                   {formatCurrency(totalSales)}
                 </div>
               </div>
@@ -223,18 +231,18 @@ const DealHistory: React.FC = () => {
           
           {/* Average Deal Value */}
           <Card className="border shadow-md bg-gradient-to-br from-purple-50 to-purple-100">
-            <CardContent className="p-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between">
-                <div className="flex items-center">
-                  <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 shadow-sm">
-                    <CalendarClock className="h-6 w-6" />
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center min-w-0 flex-1">
+                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 shadow-sm flex-shrink-0">
+                    <CalendarClock className="h-5 w-5 md:h-6 md:w-6" />
                   </div>
-                  <div className="ml-4">
-                    <h3 className="text-lg font-medium">Average Deal Value</h3>
-                    <p className="text-sm text-gray-500">Across all transactions</p>
+                  <div className="ml-3 md:ml-4 min-w-0 flex-1">
+                    <h3 className="text-sm md:text-lg font-medium truncate">{t('averageDealValue')}</h3>
+                    <p className="text-xs md:text-sm text-gray-500 truncate">{t('acrossAllTransactions')}</p>
                   </div>
                 </div>
-                <div className="mt-4 md:mt-0 text-2xl font-bold text-purple-600">
+                <div className="text-lg md:text-2xl font-bold text-purple-600 ml-2 flex-shrink-0">
                   {formatCurrency(avgDealValue)}
                 </div>
               </div>
@@ -249,7 +257,7 @@ const DealHistory: React.FC = () => {
               <div className="relative">
                 <Search className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
                 <Input 
-                  placeholder="Search by customer, plot, or project" 
+                  placeholder={t('searchByCustomer')}
                   className="pl-10 border-gray-300"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -260,14 +268,14 @@ const DealHistory: React.FC = () => {
                 <SelectTrigger className="border-gray-300">
                   <div className="flex items-center gap-2">
                     <Filter className="h-4 w-4 text-gray-500" />
-                    <SelectValue placeholder="Filter by status" />
+                    <SelectValue placeholder={t('filterByStatus')} />
                   </div>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="Completed">Completed</SelectItem>
-                  <SelectItem value="Pending">Pending</SelectItem>
-                  <SelectItem value="Cancelled">Cancelled</SelectItem>
+                  <SelectItem value="all">{t('allStatuses')}</SelectItem>
+                  <SelectItem value="Completed">{t('completed')}</SelectItem>
+                  <SelectItem value="Pending">{t('pending')}</SelectItem>
+                  <SelectItem value="Cancelled">{t('cancelled')}</SelectItem>
                 </SelectContent>
               </Select>
               
@@ -275,11 +283,11 @@ const DealHistory: React.FC = () => {
                 <SelectTrigger className="border-gray-300">
                   <div className="flex items-center gap-2">
                     <Building className="h-4 w-4 text-gray-500" />
-                    <SelectValue placeholder="Filter by project" />
+                    <SelectValue placeholder={t('filterByProject')} />
                   </div>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Projects</SelectItem>
+                  <SelectItem value="all">{t('allProjects')}</SelectItem>
                   {uniqueProjects.map(project => (
                     <SelectItem key={project} value={project}>{project}</SelectItem>
                   ))}
@@ -292,14 +300,14 @@ const DealHistory: React.FC = () => {
                   className="flex-1 rounded-none"
                   onClick={() => setViewMode('all')}
                 >
-                  List View
+                  {t('listView')}
                 </Button>
                 <Button 
                   variant={viewMode === 'monthly' ? "default" : "ghost"}
                   className="flex-1 rounded-none"
                   onClick={() => setViewMode('monthly')}
                 >
-                  Monthly View
+                  {t('monthlyView')}
                 </Button>
               </div>
             </div>
@@ -312,10 +320,10 @@ const DealHistory: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-primary" />
-                Property Transactions
+                {t('propertyTransactions')}
               </CardTitle>
               <CardDescription>
-                Showing {filteredDeals.length} transactions
+                {t('showingTransactions', { count: filteredDeals.length })}
                 {statusFilter && ` with status: ${statusFilter}`}
                 {projectFilter && ` in project: ${projectFilter}`}
               </CardDescription>
@@ -325,14 +333,14 @@ const DealHistory: React.FC = () => {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-gray-50">
-                      <TableHead>Plot</TableHead>
-                      <TableHead>Project</TableHead>
-                      <TableHead>Customer</TableHead>
-                      <TableHead>Contact</TableHead>
-                      <TableHead>Sale Date</TableHead>
-                      <TableHead className="text-right">Price</TableHead>
-                      <TableHead className="text-right">Commission</TableHead>
-                      <TableHead>Status</TableHead>
+                      <TableHead>{t('plot')}</TableHead>
+                      <TableHead>{t('project')}</TableHead>
+                      <TableHead>{t('customer')}</TableHead>
+                      <TableHead>{t('contact')}</TableHead>
+                      <TableHead>{t('saleDate')}</TableHead>
+                      <TableHead className="text-right">{t('price')}</TableHead>
+                      <TableHead className="text-right">{t('commission')}</TableHead>
+                      <TableHead>{t('status')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -387,7 +395,7 @@ const DealHistory: React.FC = () => {
                         <TableCell colSpan={8} className="h-32 text-center">
                           <div className="flex flex-col items-center justify-center text-gray-500">
                             <FileText className="h-8 w-8 mb-2 text-gray-300" />
-                            <p>No transactions found matching your filters</p>
+                            <p>{t('noTransactionsFound')}</p>
                             <Button 
                               variant="link" 
                               className="mt-2" 
@@ -397,7 +405,7 @@ const DealHistory: React.FC = () => {
                                 setProjectFilter(null);
                               }}
                             >
-                              Reset filters
+                              {t('resetFilters')}
                             </Button>
                           </div>
                         </TableCell>
@@ -431,13 +439,13 @@ const DealHistory: React.FC = () => {
                     <Table>
                       <TableHeader>
                         <TableRow className="bg-gray-50">
-                          <TableHead>Plot</TableHead>
-                          <TableHead>Project</TableHead>
-                          <TableHead>Customer</TableHead>
-                          <TableHead>Sale Date</TableHead>
-                          <TableHead className="text-right">Price</TableHead>
-                          <TableHead className="text-right">Commission</TableHead>
-                          <TableHead>Status</TableHead>
+                          <TableHead>{t('plot')}</TableHead>
+                          <TableHead>{t('project')}</TableHead>
+                          <TableHead>{t('customer')}</TableHead>
+                          <TableHead>{t('saleDate')}</TableHead>
+                          <TableHead className="text-right">{t('price')}</TableHead>
+                          <TableHead className="text-right">{t('commission')}</TableHead>
+                          <TableHead>{t('status')}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -522,7 +530,7 @@ const DealHistory: React.FC = () => {
                 <CardContent className="p-6">
                   <div className="h-32 flex flex-col items-center justify-center text-gray-500">
                     <FileText className="h-8 w-8 mb-2 text-gray-300" />
-                    <p>No transactions found matching your filters</p>
+                    <p>{t('noTransactionsFound')}</p>
                     <Button 
                       variant="link" 
                       className="mt-2" 
@@ -532,7 +540,7 @@ const DealHistory: React.FC = () => {
                         setProjectFilter(null);
                       }}
                     >
-                      Reset filters
+                      {t('resetFilters')}
                     </Button>
                   </div>
                 </CardContent>

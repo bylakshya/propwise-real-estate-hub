@@ -12,7 +12,7 @@ import { ArrowLeft, Download, Filter, Grid3X3, Users } from 'lucide-react';
 import PlotDetailDialog from '@/components/builder/PlotDetailDialog';
 
 const ProjectDetail: React.FC = () => {
-  const { projectId } = useParams<{ projectId: string }>();
+  const { id: projectId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [project, setProject] = useState<Project | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');

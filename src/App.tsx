@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -33,6 +32,7 @@ import EmailCampaigns from "./pages/builder/EmailCampaigns";
 import LeadGeneration from "./pages/builder/LeadGeneration";
 import SubscriptionPage from "./pages/builder/SubscriptionPage";
 import WhatsAppSetup from "./pages/builder/WhatsAppSetup";
+import AdminPanel from "./pages/builder/AdminPanel";
 
 // Broker Pages
 import BrokerDashboard from "./pages/broker/BrokerDashboard";
@@ -76,6 +76,7 @@ const App = () => (
                 <Route path="/builder/marketing/leads" element={<LeadGeneration />} />
                 <Route path="/builder/subscription" element={<SubscriptionPage />} />
                 <Route path="/builder/whatsapp-setup" element={<WhatsAppSetup />} />
+                <Route path="/builder/admin" element={<AdminPanel />} />
                 
                 {/* Placeholder routes for new sidebar items */}
                 <Route path="/builder/crm" element={<div className="p-8"><h1 className="text-2xl font-bold">CRM Integration - Coming Soon</h1></div>} />
@@ -90,7 +91,6 @@ const App = () => (
                 <Route path="/builder/legal" element={<div className="p-8"><h1 className="text-2xl font-bold">Legal Compliance - Coming Soon</h1></div>} />
                 <Route path="/builder/workflows" element={<div className="p-8"><h1 className="text-2xl font-bold">Workflow Automation - Coming Soon</h1></div>} />
                 <Route path="/builder/notifications" element={<div className="p-8"><h1 className="text-2xl font-bold">Notifications Center - Coming Soon</h1></div>} />
-                <Route path="/builder/admin" element={<div className="p-8"><h1 className="text-2xl font-bold">Admin Panel - Coming Soon</h1></div>} />
                 <Route path="/builder/help" element={<div className="p-8"><h1 className="text-2xl font-bold">Help Center - Coming Soon</h1></div>} />
                 
                 {/* Broker Routes */}

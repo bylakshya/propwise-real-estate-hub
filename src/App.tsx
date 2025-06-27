@@ -31,6 +31,8 @@ import ConstructionMaterials from "./pages/builder/ConstructionMaterials";
 import MaterialSuppliers from "./pages/builder/MaterialSuppliers";
 import InventoryManagement from "./pages/builder/InventoryManagement";
 import AIFeatures from "./pages/builder/AIFeatures";
+import EmailCampaigns from "./pages/builder/EmailCampaigns";
+import LeadGeneration from "./pages/builder/LeadGeneration";
 
 // 404 Page
 import NotFound from "./pages/NotFound";
@@ -206,6 +208,32 @@ const AppRoutes = () => {
             <RoleCheck>
               <BuilderRoute>
                 <MarketingHub />
+              </BuilderRoute>
+            </RoleCheck>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/builder/marketing/email" 
+        element={
+          <ProtectedRoute>
+            <RoleCheck>
+              <BuilderRoute>
+                <EmailCampaigns />
+              </BuilderRoute>
+            </RoleCheck>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/builder/marketing/leads" 
+        element={
+          <ProtectedRoute>
+            <RoleCheck>
+              <BuilderRoute>
+                <LeadGeneration />
               </BuilderRoute>
             </RoleCheck>
           </ProtectedRoute>

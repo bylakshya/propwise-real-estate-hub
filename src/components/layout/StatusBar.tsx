@@ -14,6 +14,39 @@ const StatusBar: React.FC = () => {
   const { toast } = useToast();
   const [language, setLanguage] = useState<'en' | 'hi'>('en');
 
+  const texts = {
+    en: {
+      title: 'RealEstate Pro',
+      subscription: 'Subscription',
+      settings: 'Settings',
+      account: 'Account',
+      preferences: 'Preferences',
+      notifications: 'Notifications',
+      myAccount: 'My Account',
+      profile: 'Profile',
+      logout: 'Logout',
+      languageChanged: 'Language Changed',
+      englishSelected: 'English language selected',
+      whatsappSetup: 'WhatsApp Setup'
+    },
+    hi: {
+      title: 'रियल एस्टेट प्रो',
+      subscription: 'सब्सक्रिप्शन',
+      settings: 'सेटिंग्स',
+      account: 'खाता',
+      preferences: 'प्राथमिकताएं',
+      notifications: 'सूचनाएं',
+      myAccount: 'मेरा खाता',
+      profile: 'प्रोफाइल',
+      logout: 'लॉग आउट',
+      languageChanged: 'भाषा बदल गई',
+      englishSelected: 'हिंदी भाषा चुनी गई',
+      whatsappSetup: 'व्हाट्सऐप सेटअप'
+    }
+  };
+
+  const currentTexts = texts[language];
+
   const toggleLanguage = () => {
     const newLanguage = language === 'en' ? 'hi' : 'en';
     setLanguage(newLanguage);
@@ -23,10 +56,19 @@ const StatusBar: React.FC = () => {
     });
   };
 
+  const handleWhatsAppSetup = () => {
+    toast({
+      title: currentTexts.whatsappSetup,
+      description: language === 'en' 
+        ? 'WhatsApp integration setup initiated!' 
+        : 'व्हाट्सऐप एकीकरण सेटअप शुरू किया गया!',
+    });
+  };
+
   return (
     <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 px-4 py-2 flex items-center justify-between">
       <div className="text-lg font-semibold text-realestate-primary dark:text-blue-400">
-        RealEstate Pro
+        {currentTexts.title}
       </div>
       
       <div className="flex items-center gap-4">
@@ -38,9 +80,14 @@ const StatusBar: React.FC = () => {
           {language === 'en' ? 'English' : 'हिंदी'}
         </Button>
         
+        {/* WhatsApp Setup */}
+        <Button variant="outline" size="sm" onClick={handleWhatsAppSetup} className="hidden sm:flex">
+          {currentTexts.whatsappSetup}
+        </Button>
+        
         {/* Subscription Button */}
         <Button variant="outline" size="sm" className="hidden sm:flex">
-          Subscription
+          {currentTexts.subscription}
         </Button>
         
         {/* Settings */}
@@ -54,11 +101,11 @@ const StatusBar: React.FC = () => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-            <DropdownMenuLabel>Settings</DropdownMenuLabel>
+            <DropdownMenuLabel>{currentTexts.settings}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Account</DropdownMenuItem>
-            <DropdownMenuItem>Preferences</DropdownMenuItem>
-            <DropdownMenuItem>Notifications</DropdownMenuItem>
+            <DropdownMenuItem>{currentTexts.account}</DropdownMenuItem>
+            <DropdownMenuItem>{currentTexts.preferences}</DropdownMenuItem>
+            <DropdownMenuItem>{currentTexts.notifications}</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         
@@ -73,7 +120,7 @@ const StatusBar: React.FC = () => {
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>{currentTexts.myAccount}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="flex flex-col items-start">
               <span className="font-medium">{user?.name}</span>
@@ -83,8 +130,8 @@ const StatusBar: React.FC = () => {
               </span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+            <DropdownMenuItem>{currentTexts.profile}</DropdownMenuItem>
+            <DropdownMenuItem onClick={logout}>{currentTexts.logout}</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

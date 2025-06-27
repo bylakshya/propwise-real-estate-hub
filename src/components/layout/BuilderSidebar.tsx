@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { 
@@ -15,6 +16,7 @@ import {
   MessageCircle,
   FileSymlink,
   ChevronRight,
+  ChevronDown,
   Megaphone,
   Mail,
   Target,
@@ -26,98 +28,71 @@ import {
 
 const BuilderSidebar: React.FC = () => {
   const location = useLocation();
+  const [expandedSections, setExpandedSections] = useState<string[]>(['marketing', 'materials']);
   
-  const menuItems = [
+  const toggleSection = (section: string) => {
+    setExpandedSections(prev => 
+      prev.includes(section) 
+        ? prev.filter(s => s !== section)
+        : [...prev, section]
+    );
+  };
+
+  const isActive = (path: string) => location.pathname === path;
+  
+  const menuSections = [
     {
-      name: 'Dashboard',
-      path: '/builder',
-      icon: LayoutDashboard,
+      name: 'Core Features',
+      items: [
+        { name: 'Dashboard', path: '/builder', icon: LayoutDashboard },
+        { name: 'Manage Projects', path: '/builder/projects', icon: Package },
+        { name: 'Customer Manager', path: '/builder/customers', icon: Users },
+        { name: 'Calendar', path: '/builder/calendar', icon: Calendar },
+        { name: 'Calculator', path: '/builder/calculator', icon: CalcIcon },
+      ]
     },
     {
-      name: 'Manage Projects',
-      path: '/builder/projects',
-      icon: Package,
+      name: 'Marketing',
+      key: 'marketing',
+      expandable: true,
+      items: [
+        { name: 'Marketing Hub', path: '/builder/marketing', icon: Megaphone },
+        { name: 'Email Campaigns', path: '/builder/marketing/email', icon: Mail },
+        { name: 'Lead Generation', path: '/builder/marketing/leads', icon: Target },
+      ]
     },
     {
-      name: 'Customer Manager',
-      path: '/builder/customers',
-      icon: Users,
+      name: 'Construction & Materials',
+      key: 'materials',
+      expandable: true,
+      items: [
+        { name: 'Construction Materials', path: '/builder/materials', icon: Hammer },
+        { name: 'Material Suppliers', path: '/builder/materials/suppliers', icon: Truck },
+        { name: 'Inventory Management', path: '/builder/materials/inventory', icon: Package2 },
+      ]
     },
     {
-      name: 'Marketing Hub',
-      path: '/builder/marketing',
-      icon: Megaphone,
+      name: 'Business Intelligence',
+      items: [
+        { name: 'AI Features', path: '/builder/ai-features', icon: Brain },
+        { name: 'Stats & Analysis', path: '/builder/stats', icon: BarChart3 },
+        { name: 'Reports & Legal Docs', path: '/builder/reports', icon: FileText },
+      ]
     },
     {
-      name: 'Email Campaigns',
-      path: '/builder/marketing/email',
-      icon: Mail,
+      name: 'Operations',
+      items: [
+        { name: 'Financials', path: '/builder/financials', icon: DollarSign },
+        { name: 'Collection Tracker', path: '/builder/collections', icon: MessageCircle },
+        { name: 'Deals History', path: '/builder/deals', icon: FileSymlink },
+      ]
     },
     {
-      name: 'Lead Generation',
-      path: '/builder/marketing/leads',
-      icon: Target,
-    },
-    {
-      name: 'Construction Materials',
-      path: '/builder/materials',
-      icon: Hammer,
-    },
-    {
-      name: 'Material Suppliers',
-      path: '/builder/materials/suppliers',
-      icon: Truck,
-    },
-    {
-      name: 'Inventory Management',
-      path: '/builder/materials/inventory',
-      icon: Package2,
-    },
-    {
-      name: 'AI Features',
-      path: '/builder/ai-features',
-      icon: Brain,
-    },
-    {
-      name: 'Financials',
-      path: '/builder/financials',
-      icon: DollarSign,
-    },
-    {
-      name: 'Calendar',
-      path: '/builder/calendar',
-      icon: Calendar,
-    },
-    {
-      name: 'Deals History',
-      path: '/builder/deals',
-      icon: FileSymlink,
-    },
-    {
-      name: 'Reports & Legal Docs',
-      path: '/builder/reports',
-      icon: FileText,
-    },
-    {
-      name: 'Calculator',
-      path: '/builder/calculator',
-      icon: CalcIcon,
-    },
-    {
-      name: 'Collection Tracker',
-      path: '/builder/collections',
-      icon: MessageCircle,
-    },
-    {
-      name: 'Stats & Analysis',
-      path: '/builder/stats',
-      icon: BarChart3,
-    },
-    {
-      name: 'Admin',
-      path: '/builder/admin',
-      icon: UserCog,
-    },
+      name: 'System',
+      items: [
+        { name: 'Admin', path: '/builder/admin', icon: UserCog },
+      ]
+    }
   ];
 
   return (
@@ -132,34 +107,81 @@ const BuilderSidebar: React.FC = () => {
       </div>
       
       <nav className="flex-1 overflow-y-auto py-4">
-        <ul className="space-y-1 px-3">
-          {menuItems.map((item) => {
-            const IconComponent = item.icon;
-            const isActive = location.pathname === item.path || 
-              (item.path !== '/builder' && location.pathname.startsWith(item.path));
-            
-            return (
-              <li key={item.path}>
-                <Link
-                  to={item.path}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
-                    isActive 
-                      ? "bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 border-l-4 border-blue-500" 
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+        <div className="px-3 space-y-6">
+          {menuSections.map((section) => (
+            <div key={section.name}>
+              {section.expandable ? (
+                <div>
+                  <button
+                    onClick={() => toggleSection(section.key!)}
+                    className="w-full flex items-center justify-between px-3 py-2 text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  >
+                    <span>{section.name}</span>
+                    {expandedSections.includes(section.key!) ? (
+                      <ChevronDown className="h-4 w-4" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4" />
+                    )}
+                  </button>
+                  {expandedSections.includes(section.key!) && (
+                    <ul className="space-y-1 mt-2 ml-3">
+                      {section.items.map((item) => {
+                        const IconComponent = item.icon;
+                        const active = isActive(item.path);
+                        
+                        return (
+                          <li key={item.path}>
+                            <Link
+                              to={item.path}
+                              className={cn(
+                                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                                active 
+                                  ? "bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 border-l-4 border-blue-500" 
+                                  : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+                              )}
+                            >
+                              <IconComponent className="h-4 w-4 flex-shrink-0" />
+                              <span className="flex-1">{item.name}</span>
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
                   )}
-                >
-                  <IconComponent className="h-5 w-5 flex-shrink-0" />
-                  <span className="flex-1">{item.name}</span>
-                  <ChevronRight className={cn(
-                    "h-4 w-4 transition-transform duration-200",
-                    isActive ? "text-blue-500" : "text-gray-400 opacity-0 group-hover:opacity-100"
-                  )} />
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+                </div>
+              ) : (
+                <div>
+                  <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    {section.name}
+                  </div>
+                  <ul className="space-y-1">
+                    {section.items.map((item) => {
+                      const IconComponent = item.icon;
+                      const active = isActive(item.path);
+                      
+                      return (
+                        <li key={item.path}>
+                          <Link
+                            to={item.path}
+                            className={cn(
+                              "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                              active 
+                                ? "bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 border-l-4 border-blue-500" 
+                                : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+                            )}
+                          >
+                            <IconComponent className="h-5 w-5 flex-shrink-0" />
+                            <span className="flex-1">{item.name}</span>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </nav>
       
       <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">

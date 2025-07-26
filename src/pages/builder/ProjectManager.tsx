@@ -1,224 +1,216 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { mockProjects } from '@/data/mockData';
-import { Project } from '@/types';
-import { PlusCircle, Edit, Share, ArrowRight } from 'lucide-react';
+import { Search } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { supabase } from '@/integrations/supabase/client';
+import { RealEstateProject } from '@/types/project';
+import { CreateProjectDialog } from '@/components/projects/CreateProjectDialog';
+import { ProjectCard } from '@/components/projects/ProjectCard';
+import { useToast } from '@/hooks/use-toast';
 
 const ProjectManager: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [projects, setProjects] = useState<RealEstateProject[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const { t } = useLanguage();
+  const { toast } = useToast();
+  
+  // Fetch projects from Supabase
+  const fetchProjects = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setProjects(data || []);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      toast({
+        title: t('error'),
+        description: t('errorFetchingProjects'),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
   
   // Filter projects
-  const filteredProjects = mockProjects.filter(project => {
-    if (searchQuery && !project.name.toLowerCase().includes(searchQuery.toLowerCase()) && 
+  const filteredProjects = projects.filter(project => {
+    if (searchQuery && 
+        !project.name.toLowerCase().includes(searchQuery.toLowerCase()) && 
         !project.location.toLowerCase().includes(searchQuery.toLowerCase())) {
       return false;
     }
     return true;
   });
+
+  const activeProjects = filteredProjects.filter(project => 
+    ['pre_launch', 'booking_open', 'under_construction'].includes(project.project_status)
+  );
+
+  const completedProjects = filteredProjects.filter(project => 
+    ['possession', 'completed'].includes(project.project_status)
+  );
+
+  const handleViewDetails = (projectId: string) => {
+    navigate(`/builder/project-detail/${projectId}`);
+  };
+
+  const handleEdit = (projectId: string) => {
+    // TODO: Implement edit functionality
+    toast({
+      title: t('info'),
+      description: t('featureComingSoon'),
+    });
+  };
+
+  const handleShare = (projectId: string) => {
+    // TODO: Implement share functionality
+    const shareUrl = `${window.location.origin}/builder/project-detail/${projectId}`;
+    navigator.clipboard.writeText(shareUrl);
+    toast({
+      title: t('success'),
+      description: t('linkCopied'),
+    });
+  };
+  
+  const ProjectList: React.FC<{ projects: RealEstateProject[] }> = ({ projects }) => {
+    if (isLoading) {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <Card key={i} className="h-96 animate-pulse">
+              <div className="h-48 bg-muted"></div>
+              <CardContent className="p-4 space-y-3">
+                <div className="h-4 bg-muted rounded"></div>
+                <div className="h-3 bg-muted rounded w-3/4"></div>
+                <div className="h-3 bg-muted rounded w-1/2"></div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      );
+    }
+
+    if (projects.length === 0) {
+      return (
+        <div className="text-center py-12 bg-background rounded-lg border">
+          <div className="mx-auto w-24 h-24 mb-4 rounded-full bg-muted flex items-center justify-center">
+            <Search className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <h3 className="text-lg font-medium text-foreground mb-2">{t('noProjectsFound')}</h3>
+          <p className="text-muted-foreground">{t('tryAdjustingSearch')}</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {projects.map((project) => (
+          <ProjectCard 
+            key={project.id} 
+            project={project} 
+            onViewDetails={handleViewDetails}
+            onEdit={handleEdit}
+            onShare={handleShare}
+          />
+        ))}
+      </div>
+    );
+  };
   
   return (
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="font-bold text-3xl mb-2">Project Manager</h1>
-            <p className="text-gray-500">Manage your real estate projects, plots, and development status.</p>
+            <h1 className="font-bold text-3xl mb-2">{t('projectManager')}</h1>
+            <p className="text-muted-foreground">{t('manageRealEstateProjects')}</p>
           </div>
           
-          <Button className="md:self-start">
-            <PlusCircle className="h-5 w-5 mr-2" />
-            Create New Project
-          </Button>
+          <CreateProjectDialog onProjectCreated={fetchProjects} />
         </div>
         
         {/* Search */}
         <Card>
           <CardContent className="p-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium mb-1 block">Search Projects</label>
-                <Input
-                  placeholder="Search by name or location"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
+            <div className="relative">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder={t('searchByNameLocation')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
             </div>
           </CardContent>
         </Card>
         
+        {/* Projects Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground">{t('totalProjects')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{projects.length}</div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground">{t('activeProjects')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{activeProjects.length}</div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground">{t('completedProjects')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{completedProjects.length}</div>
+            </CardContent>
+          </Card>
+        </div>
+        
         {/* Projects Tabs */}
         <Tabs defaultValue="all" className="w-full">
-          <TabsList className="grid grid-cols-3 w-full max-w-md mb-4">
-            <TabsTrigger value="all">All Projects</TabsTrigger>
-            <TabsTrigger value="active">Active</TabsTrigger>
-            <TabsTrigger value="completed">Completed</TabsTrigger>
+          <TabsList className="grid grid-cols-3 w-full max-w-md mb-6">
+            <TabsTrigger value="all">{t('allProjects')}</TabsTrigger>
+            <TabsTrigger value="active">{t('active')}</TabsTrigger>
+            <TabsTrigger value="completed">{t('completed')}</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="all" className="space-y-6">
-            {filteredProjects.map((project) => (
-              <ProjectCard 
-                key={project.id} 
-                project={project} 
-                onViewDetails={() => navigate(`/builder/projects/${project.id}`)} 
-              />
-            ))}
-            
-            {filteredProjects.length === 0 && (
-              <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-400 mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="6" width="20" height="12" rx="2"></rect>
-                  <path d="M12 12h.01"></path>
-                  <path d="M17 12h.01"></path>
-                  <path d="M7 12h.01"></path>
-                  <path d="M2 10h20"></path>
-                </svg>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No Projects Found</h3>
-                <p className="text-gray-500">Try adjusting your search criteria</p>
-              </div>
-            )}
+          <TabsContent value="all">
+            <ProjectList projects={filteredProjects} />
           </TabsContent>
           
-          <TabsContent value="active" className="space-y-6">
-            <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Active Projects</h3>
-              <p className="text-gray-500">All your projects are currently in active status.</p>
-            </div>
+          <TabsContent value="active">
+            <ProjectList projects={activeProjects} />
           </TabsContent>
           
-          <TabsContent value="completed" className="space-y-6">
-            <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No Completed Projects</h3>
-              <p className="text-gray-500">You don't have any completed projects yet.</p>
-            </div>
+          <TabsContent value="completed">
+            <ProjectList projects={completedProjects} />
           </TabsContent>
         </Tabs>
       </div>
     </DashboardLayout>
-  );
-};
-
-interface ProjectCardProps {
-  project: Project;
-  onViewDetails: () => void;
-}
-
-const ProjectCard: React.FC<ProjectCardProps> = ({ project, onViewDetails }) => {
-  const totalPlots = project.plots.length;
-  const soldPlots = project.plots.filter(p => p.status === 'Sold').length;
-  const reservedPlots = project.plots.filter(p => p.status === 'Reserved').length;
-  const availablePlots = project.plots.filter(p => p.status === 'Available').length;
-  
-  // Calculate percentages
-  const soldPercentage = Math.round((soldPlots / totalPlots) * 100);
-  const reservedPercentage = Math.round((reservedPlots / totalPlots) * 100);
-  const availablePercentage = Math.round((availablePlots / totalPlots) * 100);
-  
-  return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer" onClick={onViewDetails}>
-      <div className="flex flex-col md:flex-row">
-        <div className="md:w-1/3 h-60 md:h-auto">
-          <img 
-            src={project.layouts[0]?.imageUrl || 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=860&q=80'} 
-            alt={project.name}
-            className="w-full h-full object-cover"
-          />
-        </div>
-        
-        <CardContent className="p-5 flex-1">
-          <div className="flex flex-col md:flex-row justify-between mb-4">
-            <div>
-              <h3 className="font-semibold text-xl mb-1">{project.name}</h3>
-              <p className="text-gray-500 mb-2">{project.location}</p>
-              <div className="flex items-center gap-2 text-sm text-gray-700">
-                <span>Area: {project.totalArea} {project.areaUnit}</span>
-                <span>•</span>
-                <span>Plots: {totalPlots}</span>
-              </div>
-            </div>
-            
-            <div className="mt-4 md:mt-0 flex md:flex-col items-center md:items-end gap-2 md:gap-0">
-              <span className="text-xs text-gray-500">Last Updated</span>
-              <span className="text-sm font-medium">{new Date(project.updatedAt).toLocaleDateString()}</span>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="p-3 bg-gray-50 rounded-lg">
-              <div className="flex justify-between mb-1">
-                <span className="text-sm text-gray-500">Sold</span>
-                <span className="text-sm font-medium">{soldPlots}/{totalPlots}</span>
-              </div>
-              <div className="w-full h-2 bg-gray-200 rounded-full">
-                <div 
-                  className="h-full bg-realestate-success rounded-full" 
-                  style={{ width: `${soldPercentage}%` }}
-                ></div>
-              </div>
-            </div>
-            
-            <div className="p-3 bg-gray-50 rounded-lg">
-              <div className="flex justify-between mb-1">
-                <span className="text-sm text-gray-500">Reserved</span>
-                <span className="text-sm font-medium">{reservedPlots}/{totalPlots}</span>
-              </div>
-              <div className="w-full h-2 bg-gray-200 rounded-full">
-                <div 
-                  className="h-full bg-realestate-warning rounded-full" 
-                  style={{ width: `${reservedPercentage}%` }}
-                ></div>
-              </div>
-            </div>
-            
-            <div className="p-3 bg-gray-50 rounded-lg">
-              <div className="flex justify-between mb-1">
-                <span className="text-sm text-gray-500">Available</span>
-                <span className="text-sm font-medium">{availablePlots}/{totalPlots}</span>
-              </div>
-              <div className="w-full h-2 bg-gray-200 rounded-full">
-                <div 
-                  className="h-full bg-realestate-info rounded-full" 
-                  style={{ width: `${availablePercentage}%` }}
-                ></div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex flex-wrap gap-2 mb-4">
-            {project.approvals.map((approval, index) => (
-              <span key={index} className="px-2 py-1 bg-green-50 text-green-700 text-xs rounded-full">
-                {approval}
-              </span>
-            ))}
-          </div>
-          
-          <div className="border-t border-gray-100 pt-4 flex justify-between items-center">
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={(e) => e.stopPropagation()}>
-                <Edit className="h-4 w-4 mr-1" />
-                Edit
-              </Button>
-              <Button variant="outline" size="sm" onClick={(e) => e.stopPropagation()}>
-                <Share className="h-4 w-4 mr-1" />
-                Share
-              </Button>
-            </div>
-            
-            <Button>
-              View Details
-              <ArrowRight className="h-4 w-4 ml-1" />
-            </Button>
-          </div>
-        </CardContent>
-      </div>
-    </Card>
   );
 };
 

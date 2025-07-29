@@ -243,6 +243,7 @@ export type Database = {
       }
       projects: {
         Row: {
+          apartment_type: string | null
           cover_photo: string | null
           created_at: string
           created_by: string | null
@@ -257,9 +258,13 @@ export type Database = {
           project_status: Database["public"]["Enums"]["project_status"]
           project_type: Database["public"]["Enums"]["project_type"]
           size_options: number[] | null
+          total_commercial_units: number | null
+          total_towers: number | null
+          tower_details: Json | null
           updated_at: string
         }
         Insert: {
+          apartment_type?: string | null
           cover_photo?: string | null
           created_at?: string
           created_by?: string | null
@@ -274,9 +279,13 @@ export type Database = {
           project_status?: Database["public"]["Enums"]["project_status"]
           project_type: Database["public"]["Enums"]["project_type"]
           size_options?: number[] | null
+          total_commercial_units?: number | null
+          total_towers?: number | null
+          tower_details?: Json | null
           updated_at?: string
         }
         Update: {
+          apartment_type?: string | null
           cover_photo?: string | null
           created_at?: string
           created_by?: string | null
@@ -291,6 +300,9 @@ export type Database = {
           project_status?: Database["public"]["Enums"]["project_status"]
           project_type?: Database["public"]["Enums"]["project_type"]
           size_options?: number[] | null
+          total_commercial_units?: number | null
+          total_towers?: number | null
+          tower_details?: Json | null
           updated_at?: string
         }
         Relationships: []

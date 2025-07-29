@@ -524,7 +524,13 @@ export type Database = {
         | "commercial"
       unit_status: "available" | "reserved" | "sold"
       unit_type: "plot" | "flat" | "villa" | "farmhouse" | "shop" | "office"
-      user_role: "admin" | "sales_manager" | "broker" | "accountant" | "viewer"
+      user_role:
+        | "admin"
+        | "sales_manager"
+        | "broker"
+        | "accountant"
+        | "viewer"
+        | "builder"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -664,7 +670,14 @@ export const Constants = {
       project_type: ["colony", "apartment", "villa", "farmhouse", "commercial"],
       unit_status: ["available", "reserved", "sold"],
       unit_type: ["plot", "flat", "villa", "farmhouse", "shop", "office"],
-      user_role: ["admin", "sales_manager", "broker", "accountant", "viewer"],
+      user_role: [
+        "admin",
+        "sales_manager",
+        "broker",
+        "accountant",
+        "viewer",
+        "builder",
+      ],
     },
   },
 } as const

@@ -167,7 +167,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (user) {
       const { error } = await supabase
         .from('user_roles')
-        .upsert({ user_id: user.id, role });
+        .upsert({ 
+          user_id: user.id, 
+          role: role as any // Type assertion since the types file hasn't updated yet
+        });
 
       if (!error) {
         setUser({ ...user, role });

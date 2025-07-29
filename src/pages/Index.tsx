@@ -13,7 +13,7 @@ const Index = () => {
         navigate("/role-selection");
       } else if (user.role === "broker") {
         navigate("/broker");
-      } else if (user.role === "builder") {
+      } else if (user.role === "builder" || user.role === "admin" || user.role === "sales_manager" || user.role === "accountant") {
         navigate("/builder");
       }
     } else {

@@ -1,16 +1,27 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, UserRole } from '@/types';
-import { useNavigate } from 'react-router-dom';
+import { User as SupabaseUser, Session } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
+import { UserRole } from '@/types/project';
+
+interface User {
+  id: string;
+  email: string;
+  name?: string;
+  role?: UserRole;
+  profileImage?: string;
+}
 
 interface AuthContextType {
   user: User | null;
+  session: Session | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  signup: (name: string, email: string, password: string) => Promise<void>;
-  updateUserRole: (role: UserRole) => void;
+  login: (email: string, password: string) => Promise<{ error?: string }>;
+  logout: () => Promise<void>;
+  signup: (email: string, password: string, name?: string) => Promise<{ error?: string }>;
+  signInWithGoogle: () => Promise<{ error?: string }>;
+  updateUserRole: (role: UserRole) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,97 +34,144 @@ export const useAuth = () => {
   return context;
 };
 
-// Mock user data for demo purposes
-const MOCK_USERS = [
-  {
-    id: '1',
-    name: 'John Broker',
-    email: 'broker@example.com',
-    password: 'password',
-    role: 'broker' as UserRole,
-    profileImage: 'https://randomuser.me/api/portraits/men/1.jpg',
-  },
-  {
-    id: '2',
-    name: 'Sarah Builder',
-    email: 'builder@example.com',
-    password: 'password',
-    role: 'builder' as UserRole,
-    profileImage: 'https://randomuser.me/api/portraits/women/2.jpg',
-  },
-];
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored user in localStorage
-    const storedUser = localStorage.getItem('realEstateUser');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
+        if (session?.user) {
+          // Fetch or create user profile
+          const supabaseUser = session.user;
+          let profile: User = {
+            id: supabaseUser.id,
+            email: supabaseUser.email!,
+            name: supabaseUser.user_metadata?.name || supabaseUser.user_metadata?.full_name || '',
+            profileImage: supabaseUser.user_metadata?.avatar_url,
+          };
+
+          // Check if user has a role
+          const { data: userRole } = await supabase
+            .from('user_roles')
+            .select('role')
+            .eq('user_id', supabaseUser.id)
+            .single();
+
+          if (userRole) {
+            profile.role = userRole.role;
+          }
+
+          setUser(profile);
+        } else {
+          setUser(null);
+        }
+        setIsLoading(false);
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user) {
+        const supabaseUser = session.user;
+        setTimeout(async () => {
+          let profile: User = {
+            id: supabaseUser.id,
+            email: supabaseUser.email!,
+            name: supabaseUser.user_metadata?.name || supabaseUser.user_metadata?.full_name || '',
+            profileImage: supabaseUser.user_metadata?.avatar_url,
+          };
+
+          const { data: userRole } = await supabase
+            .from('user_roles')
+            .select('role')
+            .eq('user_id', supabaseUser.id)
+            .single();
+
+          if (userRole) {
+            profile.role = userRole.role;
+          }
+
+          setUser(profile);
+          setIsLoading(false);
+        }, 0);
+      } else {
+        setIsLoading(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string): Promise<void> => {
-    setIsLoading(true);
-    try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Find user in mock data
-      const foundUser = MOCK_USERS.find(u => u.email === email && u.password === password);
-      
-      if (foundUser) {
-        // Remove password before storing
-        const { password, ...userWithoutPassword } = foundUser;
-        setUser(userWithoutPassword);
-        localStorage.setItem('realEstateUser', JSON.stringify(userWithoutPassword));
-      } else {
-        throw new Error('Invalid email or password');
-      }
-    } finally {
-      setIsLoading(false);
+  const login = async (email: string, password: string): Promise<{ error?: string }> => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      return { error: error.message };
     }
+
+    return {};
   };
 
-  const signup = async (name: string, email: string, password: string): Promise<void> => {
-    setIsLoading(true);
-    try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Check if user already exists
-      if (MOCK_USERS.some(u => u.email === email)) {
-        throw new Error('User already exists');
+  const signup = async (email: string, password: string, name?: string): Promise<{ error?: string }> => {
+    const redirectUrl = `${window.location.origin}/`;
+    
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: redirectUrl,
+        data: {
+          name: name || '',
+          full_name: name || '',
+        }
       }
-      
-      // Create new user
-      const newUser = {
-        id: `${MOCK_USERS.length + 1}`,
-        name,
-        email,
-        role: 'broker' as UserRole, // Default role, will be updated later
-      };
-      
-      setUser(newUser);
-      localStorage.setItem('realEstateUser', JSON.stringify(newUser));
-    } finally {
-      setIsLoading(false);
+    });
+
+    if (error) {
+      return { error: error.message };
     }
+
+    return {};
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('realEstateUser');
+  const signInWithGoogle = async (): Promise<{ error?: string }> => {
+    const redirectUrl = `${window.location.origin}/`;
+    
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: redirectUrl,
+      }
+    });
+
+    if (error) {
+      return { error: error.message };
+    }
+
+    return {};
   };
 
-  const updateUserRole = (role: UserRole) => {
+  const logout = async (): Promise<void> => {
+    await supabase.auth.signOut();
+  };
+
+  const updateUserRole = async (role: UserRole): Promise<void> => {
     if (user) {
-      const updatedUser = { ...user, role };
-      setUser(updatedUser);
-      localStorage.setItem('realEstateUser', JSON.stringify(updatedUser));
+      const { error } = await supabase
+        .from('user_roles')
+        .upsert({ user_id: user.id, role });
+
+      if (!error) {
+        setUser({ ...user, role });
+      }
     }
   };
 
@@ -121,11 +179,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <AuthContext.Provider
       value={{
         user,
+        session,
         isAuthenticated: !!user,
         isLoading,
         login,
         logout,
         signup,
+        signInWithGoogle,
         updateUserRole,
       }}
     >

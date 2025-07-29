@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { UserRole } from '@/types';
+import { UserRole } from '@/types/project';
 
 const RoleSelectionForm: React.FC = () => {
   const { updateUserRole } = useAuth();

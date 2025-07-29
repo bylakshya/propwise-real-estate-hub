@@ -4,7 +4,7 @@ export type UnitStatus = 'available' | 'reserved' | 'sold';
 export type UnitType = 'plot' | 'flat' | 'villa' | 'farmhouse' | 'shop' | 'office';
 export type PaymentStatus = 'pending' | 'paid' | 'overdue' | 'partial';
 export type LeadStatus = 'new' | 'contacted' | 'visited' | 'negotiation' | 'closed';
-export type UserRole = 'admin' | 'sales_manager' | 'broker' | 'accountant' | 'viewer';
+export type UserRole = 'admin' | 'sales_manager' | 'broker' | 'builder' | 'accountant' | 'viewer';
 
 export interface RealEstateProject {
   id: string;
